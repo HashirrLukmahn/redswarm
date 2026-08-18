@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ArchRed — Security Lab (replay)</title>
+<style>
+  :root {
+    --bg:#0a0e14; --panel:#111823; --panel2:#0d141d; --line:#1e2a3a; --txt:#c7d3e0;
+    --muted:#6b7d93; --accent:#ff4d5e; --ok:#2ecc71; --amber:#f5a623; --blue:#4aa3ff;
+    --mono: ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.5 var(--mono)}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#0e1420,#0a0e14)}
+  header h1{margin:0;font-size:18px;letter-spacing:1px} header h1 span{color:var(--accent)}
+  .sub{color:var(--muted);font-size:12px}
+  .wrap{display:grid;grid-template-columns:1fr 360px;gap:14px;padding:14px 20px}
+  .col{display:flex;flex-direction:column;gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px}
+  .card h2{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  button{font-family:var(--mono);cursor:pointer;border:1px solid var(--line);background:#16202e;color:var(--txt);padding:8px 14px;border-radius:6px;font-size:13px}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+  select{font-family:var(--mono);background:#0d141d;color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:7px 9px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,18px);gap:5px}
+  .dot{width:18px;height:18px;border-radius:4px;background:#1b2636;border:1px solid #223145;transition:background .2s}
+  .dot.thinking{background:var(--blue)}.dot.testing{background:var(--amber)}
+  .dot.verifying{background:#a06bff}.dot.completed{background:var(--ok)}.dot.blocked{background:#555}.dot.failed{background:var(--accent)}
+  .metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .metric{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+  .metric .k{color:var(--muted);font-size:11px;text-transform:uppercase} .metric .v{font-size:18px;font-weight:700}
+  .timeline{max-height:320px;overflow:auto;font-size:12px}
+  .ev{padding:3px 0;border-bottom:1px dashed #16202e;color:var(--muted)} .ev b{color:var(--txt);font-weight:600}
+  .ev .ty{color:var(--blue)} .ev .ty.FINDING_VERIFIED{color:var(--accent)} .ev .ty.BLOCKED_BY_POLICY{color:var(--amber)} .ev .ty.FINDING_REJECTED{color:var(--muted)}
+  .finding{border-left:3px solid var(--line);padding:8px 10px;margin-bottom:8px;background:var(--panel2);border-radius:0 6px 6px 0}
+  .finding.VERIFIED{border-color:var(--accent)} .finding.REJECTED{border-color:#3a4657} .finding.BLOCKED{border-color:var(--amber)}
+  .badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:4px;margin-right:6px;font-weight:700}
+  .badge.VERIFIED{background:#3a0d14;color:var(--accent)} .badge.REJECTED{background:#1b2636;color:var(--muted)} .badge.BLOCKED{background:#2a2410;color:var(--amber)}
+  .sev{font-size:10px;color:var(--amber)} .pill{font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);color:var(--muted)}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:8px}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:middle}
+  .banner{background:#0d141d;border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:11px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>ARCH<span>RED</span> · Security Lab <span style="font-size:11px;color:var(--muted)">replay</span></h1>
+  <div class="sub">Autonomous adversarial architecture testing — recorded run, controlled staging only</div></div>
+  <div class="pill" id="status">loading…</div>
+</header>
+
+<div class="wrap">
+  <div class="col">
+    <div class="card">
+      <div class="banner">Static replay of a real recorded run (offline mock provider + local fintech simulator). No live server, no secrets. Source: <a style="color:var(--blue)" href="https://github.com/HashirrLukmahn/build_club_hackathon">github.com/HashirrLukmahn/build_club_hackathon</a></div>
+    </div>
+    <div class="card">
+      <h2>Replay control</h2>
+      <div class="controls">
+        <button class="primary" id="play">▶ RELEASE THE SWARM</button>
+        <label>Speed <select id="speed"><option value="140">1×</option><option value="70" selected>2×</option><option value="35">4×</option></select></label>
+        <span class="sub" id="progress"></span>
+      </div>
+    </div>
+    <div class="card"><h2>Live swarm</h2><div class="grid" id="grid"></div>
+      <div class="legend">
+        <span><i style="background:#4aa3ff"></i>thinking</span><span><i style="background:#f5a623"></i>testing</span>
+        <span><i style="background:#a06bff"></i>verifying</span><span><i style="background:#2ecc71"></i>completed</span>
+        <span><i style="background:#555"></i>blocked</span><span><i style="background:#ff4d5e"></i>failed</span>
+      </div>
+    </div>
+    <div class="card"><h2>Findings</h2><div id="findings"><div class="sub">Press play.</div></div></div>
+  </div>
+  <div class="col">
+    <div class="card"><h2>Live metrics</h2><div class="metrics" id="metrics"></div></div>
+    <div class="card"><h2>Security event timeline</h2><div class="timeline" id="timeline"></div></div>
+  </div>
+</div>
+
+<script src="run.js"></script>
+<script>
+const R = window.ARCHRED_RUN || null;
+const el = id => document.getElementById(id);
+const grid = el("grid"), timeline = el("timeline");
+const esc = s => (s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+let dots=[], idx=new Map(), timer=null;
+
+function boot(){
+  if(!R){ el("status").textContent="no recording"; return; }
+  el("status").textContent = R.run?.name || "recorded run";
+  buildGrid(R.agents.length);
+}
+function buildGrid(n){
+  grid.innerHTML=""; dots=[]; idx=new Map();
+  R.agents.forEach((a,i)=>{ const d=document.createElement("div"); d.className="dot"; d.title=a.role; grid.appendChild(d); dots.push(d); idx.set(a.id,i); });
+}
+function dotFor(id){ const i=idx.get(id); return i==null?null:dots[i]; }
+
+const counters={agentsDone:0,hypotheses:0,experiments:0,candidate:0,verified:0,rejected:0,blocked:0};
+function renderCounters(){
+  if(el("metrics").dataset.perf) return;
+  const m=[["Agents done",counters.agentsDone],["Hypotheses",counters.hypotheses],["Experiments",counters.experiments],
+    ["Candidates",counters.candidate],["Verified",counters.verified],["Rejected",counters.rejected],["Blocked by policy",counters.blocked]];
+  el("metrics").innerHTML=m.map(([k,v])=>`<div class="metric"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+}
+function renderPerf(p){
+  el("metrics").dataset.perf="1";
+  const m=[["Model calls",p.totalModelCalls],["Peak concurrency",p.peakActiveModelCalls],["Total tokens",p.totalTokens],
+    ["~tok/s",p.approxCompletionTokensPerSec],["Latency p50",p.totalLatencyP50+"ms"],["Latency p95",p.totalLatencyP95+"ms"],
+    ["Queue p95",p.queueLatencyP95+"ms"],["Verified",counters.verified]];
+  el("metrics").innerHTML=m.map(([k,v])=>`<div class="metric"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+}
+function findingById(id){ return (R.findings||[]).find(f=>f.id===id); }
+const shown=new Set();
+function addFinding(f){
+  if(!f||shown.has(f.id))return; shown.add(f.id);
+  if(el("findings").dataset.init!=="1"){ el("findings").innerHTML=""; el("findings").dataset.init="1"; }
+  const d=document.createElement("div"); d.className="finding "+f.status;
+  d.innerHTML=`<span class="badge ${f.status}">${f.status}</span>${f.severity?`<span class="sev">${f.severity}</span> `:""}<b>${esc(f.title)}</b>`+
+    `<div class="sub">invariant ${f.invariantId}${f.findingConfidence!=null?` · confidence ${f.findingConfidence}`:""}</div>`+
+    (f.reproductionSummary?`<div class="sub">${esc(f.reproductionSummary)}</div>`:"")+
+    (f.architecturalRootCause?`<div class="sub">root cause: ${esc(f.architecturalRootCause)}</div>`:"");
+  el("findings").appendChild(d);
+}
+function apply(e){
+  const d=dotFor(e.agentId);
+  switch(e.type){
+    case "AGENT_STARTED": if(d)d.className="dot thinking"; break;
+    case "AGENT_COMPLETED": if(d)d.className="dot completed"; counters.agentsDone++; break;
+    case "HYPOTHESIS_CREATED": counters.hypotheses++; break;
+    case "EXPERIMENT_STARTED": if(d)d.className="dot testing"; counters.experiments++; break;
+    case "CANDIDATE_FINDING": counters.candidate++; break;
+    case "FINDING_VERIFIED": counters.verified++; addFinding(findingById(e.findingId)); break;
+    case "FINDING_REJECTED": counters.rejected++; addFinding(findingById(e.findingId)); break;
+    case "BLOCKED_BY_POLICY": counters.blocked++; addFinding(findingById(e.findingId)); break;
+    case "METRICS_UPDATED": if(e.metadata)renderPerf(e.metadata); break;
+    case "RUN_STATE_CHANGED": if(e.metadata&&e.metadata.status)el("status").textContent=e.metadata.status; break;
+    case "RUN_COMPLETED": el("status").textContent="COMPLETED"; break;
+  }
+  const row=document.createElement("div"); row.className="ev";
+  const t=new Date(e.timestamp).toISOString().slice(11,19);
+  row.innerHTML=`${t} <span class="ty ${e.type}">${e.type}</span> <b>${esc(e.title)}</b>`;
+  timeline.prepend(row); while(timeline.children.length>250)timeline.lastChild.remove();
+  renderCounters();
+}
+function play(){
+  if(!R)return; if(timer)clearInterval(timer);
+  Object.keys(counters).forEach(k=>counters[k]=0); shown.clear();
+  el("metrics").dataset.perf=""; el("findings").dataset.init=""; el("findings").innerHTML='<div class="sub">Running…</div>';
+  timeline.innerHTML=""; buildGrid(R.agents.length);
+  const evs=[...R.events].sort((a,b)=>a.timestamp-b.timestamp);
+  const step=Number(el("speed").value); let i=0;
+  timer=setInterval(()=>{
+    if(i>=evs.length){ clearInterval(timer); timer=null; el("progress").textContent=`${evs.length} events replayed`; if(R.metrics)renderPerf(R.metrics); return; }
+    apply(evs[i]); i++; el("progress").textContent=`${i}/${evs.length}`;
+  }, step);
+}
+el("play").onclick=play;
+boot();
+setTimeout(play, 400);
+</script>
+</body>
+</html>

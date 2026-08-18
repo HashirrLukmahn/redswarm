@@ -1,3 +1,4 @@
+import "../security/load-env.js";
 import { makeStateStore } from "../security/state/convex-store.js";
 import { runSecuritySwarm } from "../security/orchestration/run-manager.js";
 import {

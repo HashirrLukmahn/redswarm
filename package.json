@@ -12,6 +12,7 @@
     "dashboard": "tsx server/dashboard.ts",
     "run": "tsx cli/run.ts",
     "demo": "tsx cli/demo.ts",
+    "capture": "tsx cli/capture.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
