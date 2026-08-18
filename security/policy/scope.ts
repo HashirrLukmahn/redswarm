@@ -19,18 +19,27 @@ export function isHostAllowed(urlOrHost: string, allowedHosts: string[]): boolea
   return allowedHosts.some((h) => h.toLowerCase() === host.toLowerCase());
 }
 
-/** HTTPS required except for localhost (spec §14 step 2). */
-export function isTransportAllowed(url: string): ScopeCheckResult {
+/**
+ * HTTPS required except for localhost (spec §14 step 2). In a `local`
+ * environment (dev, or a container on a private compose/k8s network) http is
+ * also permitted, since the target is not internet-facing. Internet-facing
+ * `staging` still requires https.
+ */
+export function isTransportAllowed(
+  url: string,
+  opts: { environment?: "local" | "staging" } = {}
+): ScopeCheckResult {
   let parsed: URL;
   try {
     parsed = new URL(url);
   } catch {
     return { ok: false, reason: "Malformed URL" };
   }
-  const isLocal =
-    parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1";
+  const isLoopback = parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1";
   if (parsed.protocol === "https:") return { ok: true };
-  if (parsed.protocol === "http:" && isLocal) return { ok: true };
+  if (parsed.protocol === "http:" && (isLoopback || opts.environment === "local")) {
+    return { ok: true };
+  }
   return { ok: false, reason: `Insecure transport not allowed: ${parsed.protocol}` };
 }
 
@@ -90,7 +99,7 @@ export async function verifyStagingTarget(
   fetchImpl: typeof fetch = fetch
 ): Promise<ScopeCheckResult> {
   // 1. Transport + host checks on the declared origin.
-  const transport = isTransportAllowed(scope.targetOrigin);
+  const transport = isTransportAllowed(scope.targetOrigin, { environment: scope.environment });
   if (!transport.ok) return transport;
   if (!isHostAllowed(scope.targetOrigin, scope.allowedHosts)) {
     return { ok: false, reason: "Target origin host not in allowlist" };

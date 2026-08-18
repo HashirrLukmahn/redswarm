@@ -19,8 +19,9 @@ export function buildScopeFromEnv(overrides: Partial<ScopeManifest> = {}): Scope
     .split(",")
     .map((h) => h.trim())
     .filter(Boolean);
+  const environment = process.env.ARCHRED_ENVIRONMENT === "local" ? "local" : "staging";
   return ScopeManifestSchema.parse({
-    environment: "staging",
+    environment,
     targetOrigin: origin,
     allowedHosts: hosts,
     allowedApiPrefixes: ["/api/"],

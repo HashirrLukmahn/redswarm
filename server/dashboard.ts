@@ -21,8 +21,19 @@ const dashPort = Number(process.env.ARCHRED_DASHBOARD_PORT ?? 4610);
 const simPort = Number(process.env.ARCHRED_SIM_PORT ?? 4600);
 const token = process.env.ARCHRED_STAGING_VERIFICATION_TOKEN ?? "archred-local-dev-token";
 
-// Bundle the simulator so the dashboard is self-contained.
-startSimServer(simPort, token);
+// Targeting model:
+//  - Local dev: bundle the simulator and target it (default).
+//  - Container/replica: set ARCHRED_BUNDLE_SIM=false and ARCHRED_TARGET_ORIGIN
+//    to the staging replica (e.g. http://target:4600). ArchRed then operates on
+//    that container instead of starting its own simulator.
+const bundleSim = process.env.ARCHRED_BUNDLE_SIM !== "false";
+const targetOrigin = process.env.ARCHRED_TARGET_ORIGIN ?? `http://localhost:${simPort}`;
+const allowedHosts = (process.env.ARCHRED_ALLOWED_HOSTS ?? new URL(targetOrigin).hostname)
+  .split(",")
+  .map((h) => h.trim())
+  .filter(Boolean);
+
+if (bundleSim) startSimServer(simPort, token);
 
 function json(res: import("node:http").ServerResponse, status: number, body: unknown) {
   res.writeHead(status, { "content-type": "application/json", "access-control-allow-origin": "*" });
@@ -41,7 +52,7 @@ function snapshot(runId: string) {
 
 async function startRun(body: any) {
   const agentCount = Number(body?.agentCount ?? 25);
-  const scope = buildScopeFromEnv({ targetOrigin: `http://localhost:${simPort}`, allowedHosts: ["localhost"] });
+  const scope = buildScopeFromEnv({ targetOrigin, allowedHosts });
   const config = buildRunConfigFromEnv({
     name: body?.name ?? "Dashboard run",
     scope,
@@ -131,5 +142,8 @@ const server = createServer((req, res) => {
 
 server.listen(dashPort, () => {
   // eslint-disable-next-line no-console
-  console.log(`ArchRed dashboard: http://localhost:${dashPort}  (simulator on :${simPort})`);
+  console.log(
+    `ArchRed dashboard: http://localhost:${dashPort}  target=${targetOrigin}` +
+      (bundleSim ? ` (bundled simulator on :${simPort})` : " (external replica)")
+  );
 });

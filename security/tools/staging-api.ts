@@ -39,7 +39,7 @@ export async function stagingRequest(
 
   const url = new URL(req.path, scope.targetOrigin).toString();
 
-  const transport = isTransportAllowed(url);
+  const transport = isTransportAllowed(url, { environment: scope.environment });
   if (!transport.ok) return { status: 0, body: null, blocked: transport.reason };
   if (!isHostAllowed(url, scope.allowedHosts)) {
     return { status: 0, body: null, blocked: "TOOL_BLOCKED_OUT_OF_SCOPE: host not allowed" };
