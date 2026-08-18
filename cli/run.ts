@@ -1,4 +1,4 @@
-import { InMemoryStateStore } from "../security/state/store.js";
+import { makeStateStore } from "../security/state/convex-store.js";
 import { runSecuritySwarm } from "../security/orchestration/run-manager.js";
 import {
   buildRunConfigFromEnv,
@@ -20,7 +20,7 @@ async function main() {
     enableArchitect: true,
   });
 
-  const store = new InMemoryStateStore();
+  const store = makeStateStore();
   store.subscribe((e) => {
     const t = new Date(e.timestamp).toISOString().slice(11, 19);
     // eslint-disable-next-line no-console

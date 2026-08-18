@@ -42,9 +42,40 @@ export function buildHypothesisPrompt(
     "RUN SCOPE:",
     JSON.stringify(context.runScope, null, 2),
     "",
-    "Produce one AttackHypothesis as JSON. Reference personas and synthetic",
-    "accounts (ARCHRED_TEST_*) by id only. Never include credentials, Authorization",
-    "headers, hosts, or arbitrary URLs.",
+    "Produce ONE AttackHypothesis as a single JSON object with EXACTLY these keys",
+    "(all required):",
+    JSON.stringify(
+      {
+        title: "string",
+        threatFamily: "string",
+        invariantId: "e.g. FI-002",
+        architecturalAssumption: "string",
+        proposedFailureMode: "string",
+        prerequisites: ["string"],
+        affectedComponents: ["string"],
+        confidence: "number 0..1",
+        noveltyReason: "string",
+        proposedExperiment: {
+          title: "string",
+          risk: "READ_ONLY | SYNTHETIC_MUTATION | CONTROLLED_CONCURRENCY",
+          preconditions: ["string"],
+          actors: ["personaId"],
+          steps: [
+            { kind: "state", inspect: "account", targetId: "ARCHRED_TEST_ACCOUNT_A", label: "before" },
+            { kind: "api", personaId: "customer_a", method: "POST", path: "/api/transfers", body: {}, idempotencyKey: "optional" },
+          ],
+          expectedSafeOutcome: "string",
+          violationSignal: "string",
+          rationale: "string",
+        },
+      },
+      null,
+      1
+    ),
+    "Step kinds: 'api' (personaId, method, path, body?, idempotencyKey?), 'state'",
+    "(inspect: account|ledger|transaction, targetId, label), 'delay' (milliseconds).",
+    "Reference personas and synthetic accounts (ARCHRED_TEST_*) by id only. Never",
+    "include credentials, Authorization headers, hosts, or arbitrary URLs.",
   ].join("\n");
 }
 

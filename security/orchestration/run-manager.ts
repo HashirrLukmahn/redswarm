@@ -316,6 +316,7 @@ export async function runSecuritySwarm(config: RunConfig, deps: RunDeps): Promis
           model: config.model,
           runId,
         });
+        store.setAssessment(runId, assessment);
         setStatus("REMEDIATING");
         for (const rec of assessment.recommendations) {
           emit("REMEDIATION_CREATED", rec.title, { metadata: rec });

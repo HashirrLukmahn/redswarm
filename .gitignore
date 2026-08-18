@@ -7,3 +7,4 @@ dist/
 coverage/
 .convex/
 evidence-store/
+reports/

@@ -14,9 +14,12 @@
     "demo": "tsx cli/demo.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "convex:dev": "convex dev",
+    "convex:deploy": "convex deploy"
   },
   "dependencies": {
+    "convex": "^1.17.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

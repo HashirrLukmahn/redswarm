@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { startSimServer } from "../sim/server.js";
-import { InMemoryStateStore } from "../security/state/store.js";
+import { makeStateStore } from "../security/state/convex-store.js";
 import { runSecuritySwarm } from "../security/orchestration/run-manager.js";
 import {
   buildRunConfigFromEnv,
@@ -13,10 +13,11 @@ import {
   makeModelProvider,
 } from "../security/config.js";
 import { httpFixtureReset } from "../cli/shared.js";
+import { renderConsolidatedReport, renderAgentReport } from "../security/services/report.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const store = new InMemoryStateStore();
+const store = makeStateStore();
 const dashPort = Number(process.env.ARCHRED_DASHBOARD_PORT ?? 4610);
 const simPort = Number(process.env.ARCHRED_SIM_PORT ?? 4600);
 const token = process.env.ARCHRED_STAGING_VERIFICATION_TOKEN ?? "archred-local-dev-token";
@@ -114,6 +115,22 @@ const server = createServer((req, res) => {
   const snapMatch = url.pathname.match(/^\/api\/runs\/([^/]+)$/);
   if (snapMatch && req.method === "GET") {
     return json(res, 200, snapshot(snapMatch[1]!));
+  }
+
+  const reportMatch = url.pathname.match(/^\/api\/runs\/([^/]+)\/report$/);
+  if (reportMatch && req.method === "GET") {
+    const md = renderConsolidatedReport(store, reportMatch[1]!);
+    res.writeHead(200, { "content-type": "text/markdown; charset=utf-8", "access-control-allow-origin": "*" });
+    res.end(md);
+    return;
+  }
+
+  const agentReportMatch = url.pathname.match(/^\/api\/runs\/([^/]+)\/agents\/([^/]+)\/report$/);
+  if (agentReportMatch && req.method === "GET") {
+    const md = renderAgentReport(store, agentReportMatch[1]!, agentReportMatch[2]!);
+    res.writeHead(200, { "content-type": "text/markdown; charset=utf-8", "access-control-allow-origin": "*" });
+    res.end(md);
+    return;
   }
 
   const cancelMatch = url.pathname.match(/^\/api\/runs\/([^/]+)\/cancel$/);

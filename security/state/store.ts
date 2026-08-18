@@ -1,6 +1,7 @@
 import { EventEmitter } from "node:events";
 import type {
   AgentTask,
+  ArchitectureAssessment,
   EvidenceRecord,
   Finding,
   HypothesisRecord,
@@ -42,6 +43,9 @@ export interface StateStore {
   addToolMetric(m: ToolMetric): void;
   listToolMetrics(runId: string): ToolMetric[];
 
+  setAssessment(runId: string, assessment: ArchitectureAssessment): void;
+  getAssessment(runId: string): ArchitectureAssessment | undefined;
+
   emit(event: SecurityEvent): void;
   listEvents(runId: string): SecurityEvent[];
 
@@ -58,6 +62,7 @@ export class InMemoryStateStore implements StateStore {
   private modelMetrics: ModelInvocationMetric[] = [];
   private toolMetrics: ToolMetric[] = [];
   private events: SecurityEvent[] = [];
+  private assessments = new Map<string, ArchitectureAssessment>();
   private bus = new EventEmitter();
 
   constructor() {
@@ -135,6 +140,13 @@ export class InMemoryStateStore implements StateStore {
   }
   listToolMetrics(runId: string): ToolMetric[] {
     return this.toolMetrics.filter((m) => m.runId === runId);
+  }
+
+  setAssessment(runId: string, assessment: ArchitectureAssessment): void {
+    this.assessments.set(runId, assessment);
+  }
+  getAssessment(runId: string): ArchitectureAssessment | undefined {
+    return this.assessments.get(runId);
   }
 
   emit(event: SecurityEvent): void {
