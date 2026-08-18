@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ArchRed — Security Lab</title>
+<style>
+  :root {
+    --bg: #0a0e14; --panel: #111823; --panel2: #0d141d; --line: #1e2a3a;
+    --txt: #c7d3e0; --muted: #6b7d93; --accent: #ff4d5e; --ok: #2ecc71;
+    --amber: #f5a623; --blue: #4aa3ff; --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--txt); font: 14px/1.5 var(--mono); }
+  header { display:flex; align-items:center; justify-content:space-between; padding: 14px 20px; border-bottom: 1px solid var(--line); background: linear-gradient(180deg,#0e1420,#0a0e14); }
+  header h1 { margin:0; font-size: 18px; letter-spacing: 1px; }
+  header h1 span { color: var(--accent); }
+  .sub { color: var(--muted); font-size: 12px; }
+  .wrap { display:grid; grid-template-columns: 1fr 360px; gap: 14px; padding: 14px 20px; }
+  .col { display:flex; flex-direction:column; gap:14px; }
+  .card { background: var(--panel); border:1px solid var(--line); border-radius: 8px; padding: 14px; }
+  .card h2 { margin:0 0 10px; font-size: 12px; text-transform: uppercase; letter-spacing:1px; color: var(--muted); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  button { font-family: var(--mono); cursor:pointer; border:1px solid var(--line); background:#16202e; color:var(--txt); padding:8px 14px; border-radius:6px; font-size:13px; }
+  button.primary { background: var(--accent); border-color: var(--accent); color:#fff; font-weight:700; }
+  button.stop { background:#2a1216; border-color:var(--accent); color:var(--accent); }
+  select, input { font-family: var(--mono); background:#0d141d; color:var(--txt); border:1px solid var(--line); border-radius:6px; padding:7px 9px; font-size:13px; }
+  .grid { display:grid; grid-template-columns: repeat(auto-fill, 18px); gap:5px; }
+  .dot { width:18px; height:18px; border-radius:4px; background:#1b2636; border:1px solid #223145; transition: background .2s, transform .15s; }
+  .dot.queued{background:#1b2636}.dot.thinking{background:var(--blue)}.dot.testing{background:var(--amber)}
+  .dot.verifying{background:#a06bff}.dot.completed{background:var(--ok)}.dot.blocked{background:#555}.dot.failed{background:var(--accent)}
+  .metrics { display:grid; grid-template-columns: repeat(2,1fr); gap:8px; }
+  .metric { background: var(--panel2); border:1px solid var(--line); border-radius:6px; padding:8px 10px; }
+  .metric .k { color:var(--muted); font-size:11px; text-transform:uppercase; }
+  .metric .v { font-size:18px; font-weight:700; }
+  .timeline { max-height: 320px; overflow:auto; font-size:12px; }
+  .ev { padding:3px 0; border-bottom:1px dashed #16202e; color:var(--muted); }
+  .ev b { color:var(--txt); font-weight:600; }
+  .ev .ty { color:var(--blue); }
+  .ev .ty.FINDING_VERIFIED{color:var(--accent)} .ev .ty.BLOCKED_BY_POLICY{color:var(--amber)} .ev .ty.FINDING_REJECTED{color:var(--muted)}
+  .finding { border-left:3px solid var(--line); padding:8px 10px; margin-bottom:8px; background:var(--panel2); border-radius:0 6px 6px 0; }
+  .finding.VERIFIED{border-color:var(--accent)} .finding.REJECTED{border-color:#3a4657} .finding.BLOCKED{border-color:var(--amber)}
+  .badge { display:inline-block; font-size:10px; padding:2px 6px; border-radius:4px; margin-right:6px; font-weight:700; }
+  .badge.VERIFIED{background:#3a0d14;color:var(--accent)} .badge.REJECTED{background:#1b2636;color:var(--muted)} .badge.BLOCKED{background:#2a2410;color:var(--amber)}
+  .sev{font-size:10px;color:var(--amber)}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:8px}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:middle}
+  .row{display:flex;justify-content:space-between;gap:8px}
+  .pill{font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>ARCH<span>RED</span> · Security Lab</h1><div class="sub">Autonomous adversarial architecture testing — controlled staging only</div></div>
+  <div class="pill" id="status">idle</div>
+</header>
+
+<div class="wrap">
+  <div class="col">
+    <div class="card">
+      <h2>Run control</h2>
+      <div class="controls">
+        <label>Agents
+          <select id="agentCount"><option>10</option><option>25</option><option selected>50</option><option>100</option></select>
+        </label>
+        <label>Risk
+          <select id="riskMode"><option>OBSERVE_ONLY</option><option selected>SANDBOX_MUTATING</option><option>CONTROLLED_CONCURRENCY</option></select>
+        </label>
+        <label>Model conc.
+          <select id="modelConcurrency"><option>5</option><option selected>10</option><option>20</option></select>
+        </label>
+        <button class="primary" id="release">RELEASE THE SWARM</button>
+        <button class="stop" id="stop" disabled>STOP SWARM</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Live swarm</h2>
+      <div class="grid" id="grid"></div>
+      <div class="legend">
+        <span><i style="background:#4aa3ff"></i>thinking</span>
+        <span><i style="background:#f5a623"></i>testing</span>
+        <span><i style="background:#a06bff"></i>verifying</span>
+        <span><i style="background:#2ecc71"></i>completed</span>
+        <span><i style="background:#555"></i>blocked</span>
+        <span><i style="background:#ff4d5e"></i>failed</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Findings</h2>
+      <div id="findings"><div class="sub">No findings yet.</div></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card">
+      <h2>Live metrics</h2>
+      <div class="metrics" id="metrics"></div>
+    </div>
+    <div class="card">
+      <h2>Security event timeline</h2>
+      <div class="timeline" id="timeline"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let runId = null;
+const el = (id) => document.getElementById(id);
+const grid = el("grid"), timeline = el("timeline");
+const agentDots = new Map();
+const counters = { hypotheses:0, unique:0, experiments:0, candidate:0, verified:0, rejected:0, blocked:0, agentsDone:0, model:0 };
+
+function setStatus(s){ el("status").textContent = s; }
+
+function ensureGrid(n){
+  grid.innerHTML = ""; agentDots.clear();
+  for(let i=0;i<n;i++){ const d=document.createElement("div"); d.className="dot queued"; d.title="agent "+(i+1); grid.appendChild(d); agentDots.set(i,d); }
+}
+let agentIndex = new Map(); let nextIdx = 0;
+function dotFor(agentId){
+  if(!agentId) return null;
+  if(!agentIndex.has(agentId)){ agentIndex.set(agentId, nextIdx++); }
+  return agentDots.get(agentIndex.get(agentId));
+}
+
+function addEvent(e){
+  const d = document.createElement("div"); d.className="ev";
+  const t = new Date(e.timestamp).toISOString().slice(11,19);
+  d.innerHTML = `${t} <span class="ty ${e.type}">${e.type}</span> <b>${escapeHtml(e.title)}</b>`;
+  timeline.prepend(d);
+  while(timeline.children.length>250) timeline.lastChild.remove();
+}
+function escapeHtml(s){return (s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+
+function bump(e){
+  switch(e.type){
+    case "AGENT_STARTED": { const d=dotFor(e.agentId); if(d) d.className="dot thinking"; break; }
+    case "AGENT_COMPLETED": { const d=dotFor(e.agentId); if(d) d.className="dot completed"; counters.agentsDone++; break; }
+    case "HYPOTHESIS_CREATED": counters.hypotheses++; break;
+    case "EXPERIMENT_STARTED": { const d=dotFor(e.agentId); if(d) d.className="dot testing"; counters.experiments++; break; }
+    case "CANDIDATE_FINDING": counters.candidate++; break;
+    case "VERIFICATION_STARTED": break;
+    case "FINDING_VERIFIED": counters.verified++; break;
+    case "FINDING_REJECTED": counters.rejected++; break;
+    case "BLOCKED_BY_POLICY": counters.blocked++; break;
+    case "METRICS_UPDATED": renderMetrics(e.metadata); break;
+    case "RUN_STATE_CHANGED": if(e.metadata&&e.metadata.status) setStatus(e.metadata.status); break;
+    case "RUN_COMPLETED": setStatus("COMPLETED"); el("stop").disabled=true; refreshSnapshot(); break;
+    case "RUN_CANCELLED": setStatus("CANCELLED"); el("stop").disabled=true; break;
+  }
+  renderCounters();
+}
+
+function renderCounters(){
+  el("metrics").dataset.k = "";
+  const m = [
+    ["Agents done", counters.agentsDone],
+    ["Hypotheses", counters.hypotheses],
+    ["Experiments", counters.experiments],
+    ["Candidates", counters.candidate],
+    ["Verified", counters.verified],
+    ["Rejected", counters.rejected],
+    ["Blocked by policy", counters.blocked],
+  ];
+  if(!el("metrics").dataset.perf) renderMetricGrid(m);
+}
+let lastPerf=null;
+function renderMetrics(perf){ lastPerf=perf; el("metrics").dataset.perf="1"; renderMetricGrid([
+  ["Model calls", perf.totalModelCalls],
+  ["Peak concurrency", perf.peakActiveModelCalls],
+  ["Total tokens", perf.totalTokens],
+  ["~tok/s", perf.approxCompletionTokensPerSec],
+  ["Latency p50", perf.totalLatencyP50+"ms"],
+  ["Latency p95", perf.totalLatencyP95+"ms"],
+  ["Queue p95", perf.queueLatencyP95+"ms"],
+  ["Verified", counters.verified],
+]); }
+function renderMetricGrid(pairs){
+  el("metrics").innerHTML = pairs.map(([k,v])=>`<div class="metric"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+}
+
+function renderFindings(findings){
+  if(!findings || !findings.length){ el("findings").innerHTML='<div class="sub">No findings yet.</div>'; return; }
+  const order = { VERIFIED:0, BLOCKED:1, REJECTED:2 };
+  findings.sort((a,b)=>(order[a.status]??9)-(order[b.status]??9));
+  el("findings").innerHTML = findings.map(f=>`
+    <div class="finding ${f.status}">
+      <span class="badge ${f.status}">${f.status}</span>
+      ${f.severity?`<span class="sev">${f.severity}</span> `:""}
+      <b>${escapeHtml(f.title)}</b>
+      <div class="sub">invariant ${f.invariantId}${f.findingConfidence!=null?` · confidence ${f.findingConfidence}`:""}</div>
+      ${f.reproductionSummary?`<div class="sub">${escapeHtml(f.reproductionSummary)}</div>`:""}
+      ${f.architecturalRootCause?`<div class="sub">root cause: ${escapeHtml(f.architecturalRootCause)}</div>`:""}
+    </div>`).join("");
+}
+
+async function refreshSnapshot(){
+  if(!runId) return;
+  const snap = await (await fetch("/api/runs/"+runId)).json();
+  renderFindings(snap.findings);
+  if(snap.run&&snap.run.metrics) renderMetrics(snap.run.metrics);
+}
+
+const es = new EventSource("/events");
+es.onmessage = (m) => { try{ const e=JSON.parse(m.data); if(!e.type) return; if(runId&&e.runId!==runId) return; addEvent(e); bump(e); }catch{} };
+
+el("release").onclick = async () => {
+  const agentCount = Number(el("agentCount").value);
+  ensureGrid(agentCount); agentIndex=new Map(); nextIdx=0;
+  Object.keys(counters).forEach(k=>counters[k]=0);
+  el("metrics").dataset.perf="";
+  timeline.innerHTML=""; el("findings").innerHTML='<div class="sub">Running…</div>';
+  el("stop").disabled=false; setStatus("starting");
+  const r = await (await fetch("/api/start",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({
+    agentCount, riskMode: el("riskMode").value, modelConcurrency: Number(el("modelConcurrency").value)
+  })})).json();
+  runId = r.runId;
+  const poll = setInterval(refreshSnapshot, 1500);
+  setTimeout(()=>clearInterval(poll), 120000);
+};
+el("stop").onclick = async () => { if(runId){ await fetch("/api/runs/"+runId+"/cancel",{method:"POST"}); setStatus("cancelling"); } };
+
+ensureGrid(50);
+renderCounters();
+</script>
+</body>
+</html>

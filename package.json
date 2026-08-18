@@ -1,0 +1,28 @@
+{
+  "name": "archred",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "ArchRed — Autonomous Adversarial Architecture Testing Platform for fintech staging environments",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "sim": "tsx sim/server.ts",
+    "dashboard": "tsx server/dashboard.ts",
+    "run": "tsx cli/run.ts",
+    "demo": "tsx cli/demo.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}
