@@ -1,7 +1,7 @@
 import type { AgentContext } from "../schemas/index.js";
 
 /** Base hypothesis system prompt (spec §23). */
-export const BASE_HYPOTHESIS_SYSTEM = `[[ARCHRED_TASK:hypothesis]]
+export const BASE_HYPOTHESIS_SYSTEM = `[[REDSWARM_TASK:hypothesis]]
 You are one member of a controlled adversarial architecture testing swarm.
 Your job is not to compromise arbitrary systems.
 You are testing an explicitly authorized staging environment.
@@ -61,7 +61,7 @@ export function buildHypothesisPrompt(
           preconditions: ["string"],
           actors: ["personaId"],
           steps: [
-            { kind: "state", inspect: "account", targetId: "ARCHRED_TEST_ACCOUNT_A", label: "before" },
+            { kind: "state", inspect: "account", targetId: "REDSWARM_TEST_ACCOUNT_A", label: "before" },
             { kind: "api", personaId: "customer_a", method: "POST", path: "/api/transfers", body: {}, idempotencyKey: "optional" },
           ],
           expectedSafeOutcome: "string",
@@ -74,24 +74,24 @@ export function buildHypothesisPrompt(
     ),
     "Step kinds: 'api' (personaId, method, path, body?, idempotencyKey?), 'state'",
     "(inspect: account|ledger|transaction, targetId, label), 'delay' (milliseconds).",
-    "Reference personas and synthetic accounts (ARCHRED_TEST_*) by id only. Never",
+    "Reference personas and synthetic accounts (REDSWARM_TEST_*) by id only. Never",
     "include credentials, Authorization headers, hosts, or arbitrary URLs.",
   ].join("\n");
 }
 
-export const SKEPTIC_SYSTEM = `[[ARCHRED_TASK:skeptic]]
+export const SKEPTIC_SYSTEM = `[[REDSWARM_TASK:skeptic]]
 You are a skeptical security reviewer. For the given hypothesis, try hard to
 explain why the architecture may ALREADY be safe. Identify likely existing
 controls and missing assumptions. This reduces confirmation bias. Return only
 the required structured JSON output.`;
 
-export const VERIFIER_SYSTEM = `[[ARCHRED_TASK:verifier]]
+export const VERIFIER_SYSTEM = `[[REDSWARM_TASK:verifier]]
 You are an independent verifier. You did not generate this hypothesis. Review the
 deterministic invariant-check results and the captured evidence, and decide only
 whether the violation was independently reproduced. Defer to deterministic
 checks over intuition. Return only the required structured JSON output.`;
 
-export const ARCHITECT_SYSTEM = `[[ARCHRED_TASK:architect]]
+export const ARCHITECT_SYSTEM = `[[REDSWARM_TASK:architect]]
 You are the Chief Security Architect. You are given ONLY verified findings, the
 architecture snapshot, invariants, and defensive research. Cluster findings into
 systemic architectural root causes and propose remediations. Never fabricate

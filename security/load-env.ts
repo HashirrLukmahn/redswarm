@@ -6,7 +6,7 @@ import { existsSync, readFileSync } from "node:fs";
  * (Node/tsx do not auto-load it). Existing process.env values win, and inline
  * ` # comments` on unquoted values are stripped.
  */
-const path = process.env.ARCHRED_ENV_FILE ?? ".env";
+const path = process.env.REDSWARM_ENV_FILE ?? ".env";
 if (existsSync(path)) {
   for (const rawLine of readFileSync(path, "utf8").split(/\r?\n/)) {
     const line = rawLine.trim();

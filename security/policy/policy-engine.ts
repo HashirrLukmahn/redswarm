@@ -12,11 +12,11 @@ const SENSITIVE_HEADER_KEYS = new Set([
   "host",
   "cookie",
   "set-cookie",
-  "x-archred-token",
+  "x-redswarm-token",
 ]);
 
-// Real-customer-identifier heuristic: only synthetic ARCHRED_* ids are permitted.
-const REAL_ID_HINT = /\b(cust|acct|user)_(?!.*ARCHRED)[a-z0-9]{6,}\b/i;
+// Real-customer-identifier heuristic: only synthetic REDSWARM_* ids are permitted.
+const REAL_ID_HINT = /\b(cust|acct|user)_(?!.*REDSWARM)[a-z0-9]{6,}\b/i;
 
 export interface PolicyContext {
   scope: ScopeManifest;

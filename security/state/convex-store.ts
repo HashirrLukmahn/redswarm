@@ -16,7 +16,7 @@ import { InMemoryStateStore } from "./store.js";
 import { renderAgentReport, renderConsolidatedReport } from "../services/report.js";
 import { ROLE_DEFINITIONS } from "../prompts/roles/index.js";
 
-const ref = (name: string) => makeFunctionReference<"mutation">(`archred:${name}`);
+const ref = (name: string) => makeFunctionReference<"mutation">(`redswarm:${name}`);
 const M = {
   pushRun: ref("pushRun"),
   pushAgent: ref("pushAgent"),
@@ -53,7 +53,7 @@ export class ConvexMirror implements StateStore {
         // eslint-disable-next-line no-console
         console.warn(
           `[convex] mirror write failed (${(err as Error).message}). ` +
-            `Run \`npx convex dev\` to deploy archred functions. Continuing with local store only.`
+            `Run \`npx convex dev\` to deploy redswarm functions. Continuing with local store only.`
         );
       }
     });
@@ -138,7 +138,7 @@ export class ConvexMirror implements StateStore {
 /** Factory: Convex mirror when configured, otherwise plain in-memory (spec §35). */
 export function makeStateStore(): StateStore {
   const url = process.env.CONVEX_URL ?? process.env.NEXT_PUBLIC_CONVEX_URL;
-  if (process.env.ARCHRED_PERSIST === "convex" && url) {
+  if (process.env.REDSWARM_PERSIST === "convex" && url) {
     // eslint-disable-next-line no-console
     console.log(`[convex] mirroring run state to ${url}`);
     return new ConvexMirror(url);

@@ -1,11 +1,11 @@
-# CLAUDE.md — ArchRed
+# CLAUDE.md — RedSwarm
 
 Repository-level context for coding agents. The authoritative design is
 [`build-spec.md`](build-spec.md); do not duplicate it here.
 
 ## What this is
 
-ArchRed: an autonomous adversarial architecture-testing platform for fintech
+RedSwarm: an autonomous adversarial architecture-testing platform for fintech
 **staging** environments. TypeScript, ESM, Node ≥20. Run TS directly with `tsx`;
 tests via `vitest`. No build step.
 
@@ -22,7 +22,7 @@ tests via `vitest`. No build step.
 - **No `production` target mode.** `EnvironmentSchema` = `local | staging` only.
   Never add production.
 - Every run needs a verified `ScopeManifest`. Staging ownership is checked via
-  `/.well-known/archred-target` before AND on every request.
+  `/.well-known/redswarm-target` before AND on every request.
 - All execution flows through `ToolGateway` (`security/tools/tool-gateway.ts`).
   Agents never call `fetch`, Apify, or external services directly.
 - The model never receives credentials. Personas are referenced by id; the
@@ -52,8 +52,8 @@ tests via `vitest`. No build step.
 
 ## Extending
 
-- New invariant → `docs/archred/ADDING_INVARIANTS.md`.
-- New agent role → `docs/archred/ADDING_AGENT_ROLES.md`.
+- New invariant → `docs/redswarm/ADDING_INVARIANTS.md`.
+- New agent role → `docs/redswarm/ADDING_AGENT_ROLES.md`.
 
 ## Conventions
 

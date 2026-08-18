@@ -1,9 +1,9 @@
 {
-  "name": "archred",
+  "name": "redswarm",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "ArchRed — Autonomous Adversarial Architecture Testing Platform for fintech staging environments",
+  "description": "RedSwarm — Autonomous Adversarial Architecture Testing Platform for fintech staging environments",
   "engines": {
     "node": ">=20"
   },

@@ -18,7 +18,7 @@ export interface StagingResponse {
 }
 
 /** Headers the model is never allowed to control (spec §19). */
-const FORBIDDEN_HEADERS = new Set(["authorization", "host", "cookie", "x-archred-token"]);
+const FORBIDDEN_HEADERS = new Set(["authorization", "host", "cookie", "x-redswarm-token"]);
 
 /**
  * Safe staging API tool (spec §19). The hostname and auth are injected

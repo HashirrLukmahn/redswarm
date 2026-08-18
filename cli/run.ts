@@ -11,12 +11,12 @@ import { httpFixtureReset, printFindings } from "./shared.js";
 
 /**
  * Run a swarm against an already-running staging target defined by
- * ARCHRED_TARGET_ORIGIN / ARCHRED_ALLOWED_HOSTS. Start the simulator first with
+ * REDSWARM_TARGET_ORIGIN / REDSWARM_ALLOWED_HOSTS. Start the simulator first with
  * `npm run sim`, or point at your own verified staging environment.
  */
 async function main() {
   const config = buildRunConfigFromEnv({
-    provider: (process.env.ARCHRED_MODEL_PROVIDER as "mock" | "gmi") ?? "mock",
+    provider: (process.env.REDSWARM_MODEL_PROVIDER as "mock" | "gmi") ?? "mock",
     enableResearch: process.env.EXA_API_KEY ? true : false,
     enableArchitect: true,
   });

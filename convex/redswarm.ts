@@ -2,7 +2,7 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
 /**
- * ArchRed Convex functions (spec §35). Mutations upsert by natural key so the
+ * RedSwarm Convex functions (spec §35). Mutations upsert by natural key so the
  * mirror is idempotent; queries power a realtime dashboard / external consumers.
  */
 

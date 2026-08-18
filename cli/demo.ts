@@ -14,16 +14,16 @@ import { writeRunReports } from "../security/services/report.js";
 
 /** End-to-end offline demo (spec §68). Starts the simulator, releases the swarm. */
 async function main() {
-  const port = Number(process.env.ARCHRED_SIM_PORT ?? 4600);
-  const token = process.env.ARCHRED_STAGING_VERIFICATION_TOKEN ?? "archred-local-dev-token";
+  const port = Number(process.env.REDSWARM_SIM_PORT ?? 4600);
+  const token = process.env.REDSWARM_STAGING_VERIFICATION_TOKEN ?? "redswarm-local-dev-token";
   const sim = startSimServer(port, token);
 
   const scope = buildScopeFromEnv({ targetOrigin: `http://localhost:${port}`, allowedHosts: ["localhost"] });
   const config = buildRunConfigFromEnv({
-    name: "ArchRed demo swarm",
+    name: "RedSwarm demo swarm",
     scope,
-    agentCount: Number(process.env.ARCHRED_AGENT_COUNT ?? 25),
-    provider: (process.env.ARCHRED_MODEL_PROVIDER as "mock" | "gmi") ?? "mock",
+    agentCount: Number(process.env.REDSWARM_AGENT_COUNT ?? 25),
+    provider: (process.env.REDSWARM_MODEL_PROVIDER as "mock" | "gmi") ?? "mock",
     enableResearch: true,
     enableArchitect: true,
   });

@@ -19,7 +19,7 @@ export function planFromHypothesis(h: HypothesisRecord): ExperimentPlan {
     steps: draft.steps,
     expectedSafeOutcome: draft.expectedSafeOutcome,
     violationSignal: draft.violationSignal,
-    cleanupStrategy: "Reset synthetic fixtures via resetArchRedFixtures().",
+    cleanupStrategy: "Reset synthetic fixtures via resetRedSwarmFixtures().",
     rationale: draft.rationale,
   };
   // Re-validate — never trust upstream shape.

@@ -90,8 +90,8 @@ export interface StagingTargetMarker {
 }
 
 /**
- * Verify a staging target owns the ArchRed marker (spec §14).
- * Fetches GET /.well-known/archred-target and validates the response.
+ * Verify a staging target owns the RedSwarm marker (spec §14).
+ * Fetches GET /.well-known/redswarm-target and validates the response.
  * Rejects anything that is not explicitly staging + testing-enabled.
  */
 export async function verifyStagingTarget(
@@ -106,14 +106,14 @@ export async function verifyStagingTarget(
   }
 
   // 2. Fetch the staging marker.
-  const markerUrl = new URL("/.well-known/archred-target", scope.targetOrigin).toString();
+  const markerUrl = new URL("/.well-known/redswarm-target", scope.targetOrigin).toString();
   let res: Response;
   try {
     res = await fetchImpl(markerUrl, {
       method: "GET",
       redirect: "manual",
       headers: scope.ownershipVerificationToken
-        ? { "x-archred-token": scope.ownershipVerificationToken }
+        ? { "x-redswarm-token": scope.ownershipVerificationToken }
         : undefined,
     });
   } catch (err) {

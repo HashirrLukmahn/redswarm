@@ -39,8 +39,8 @@ export function startSimServer(port: number, verificationToken?: string): {
 
 // Run directly: `npm run sim`
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const port = Number(process.env.ARCHRED_SIM_PORT ?? 4600);
-  const token = process.env.ARCHRED_STAGING_VERIFICATION_TOKEN;
+  const port = Number(process.env.REDSWARM_SIM_PORT ?? 4600);
+  const token = process.env.REDSWARM_STAGING_VERIFICATION_TOKEN;
   startSimServer(port, token);
   // eslint-disable-next-line no-console
   console.log(JSON.stringify({ event: "SIM_STARTED", port }));

@@ -2,7 +2,7 @@ import type { ScopeCheckResult } from "../policy/scope.js";
 import { isHostAllowed } from "../policy/scope.js";
 
 /**
- * Apify browser execution adapter (spec §34). Runs an ArchRed browser Actor with
+ * Apify browser execution adapter (spec §34). Runs an RedSwarm browser Actor with
  * a strictly bounded, safe step vocabulary. No evalJavascript / executeShell /
  * arbitrary navigation. Origin is enforced; credentials resolved server-side.
  */

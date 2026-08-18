@@ -23,7 +23,7 @@ export class TestStateInspector {
     const res = await this.fetchImpl(url, {
       method: "GET",
       headers: this.scope.ownershipVerificationToken
-        ? { "x-archred-token": this.scope.ownershipVerificationToken }
+        ? { "x-redswarm-token": this.scope.ownershipVerificationToken }
         : {},
       redirect: "manual",
     });

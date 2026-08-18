@@ -19,18 +19,18 @@ import { renderConsolidatedReport, renderAgentReport } from "../security/service
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const store = makeStateStore();
-const dashPort = Number(process.env.ARCHRED_DASHBOARD_PORT ?? 4610);
-const simPort = Number(process.env.ARCHRED_SIM_PORT ?? 4600);
-const token = process.env.ARCHRED_STAGING_VERIFICATION_TOKEN ?? "archred-local-dev-token";
+const dashPort = Number(process.env.REDSWARM_DASHBOARD_PORT ?? 4610);
+const simPort = Number(process.env.REDSWARM_SIM_PORT ?? 4600);
+const token = process.env.REDSWARM_STAGING_VERIFICATION_TOKEN ?? "redswarm-local-dev-token";
 
 // Targeting model:
 //  - Local dev: bundle the simulator and target it (default).
-//  - Container/replica: set ARCHRED_BUNDLE_SIM=false and ARCHRED_TARGET_ORIGIN
-//    to the staging replica (e.g. http://target:4600). ArchRed then operates on
+//  - Container/replica: set REDSWARM_BUNDLE_SIM=false and REDSWARM_TARGET_ORIGIN
+//    to the staging replica (e.g. http://target:4600). RedSwarm then operates on
 //    that container instead of starting its own simulator.
-const bundleSim = process.env.ARCHRED_BUNDLE_SIM !== "false";
-const targetOrigin = process.env.ARCHRED_TARGET_ORIGIN ?? `http://localhost:${simPort}`;
-const allowedHosts = (process.env.ARCHRED_ALLOWED_HOSTS ?? new URL(targetOrigin).hostname)
+const bundleSim = process.env.REDSWARM_BUNDLE_SIM !== "false";
+const targetOrigin = process.env.REDSWARM_TARGET_ORIGIN ?? `http://localhost:${simPort}`;
+const allowedHosts = (process.env.REDSWARM_ALLOWED_HOSTS ?? new URL(targetOrigin).hostname)
   .split(",")
   .map((h) => h.trim())
   .filter(Boolean);
@@ -60,7 +60,7 @@ async function startRun(body: any) {
     scope,
     agentCount,
     riskMode: body?.riskMode ?? "SANDBOX_MUTATING",
-    provider: (body?.provider as "mock" | "gmi") ?? (process.env.ARCHRED_MODEL_PROVIDER as any) ?? "mock",
+    provider: (body?.provider as "mock" | "gmi") ?? (process.env.REDSWARM_MODEL_PROVIDER as any) ?? "mock",
     modelConcurrency: Number(body?.modelConcurrency ?? 10),
     enableResearch: true,
     enableArchitect: true,
@@ -161,7 +161,7 @@ const server = createServer((req, res) => {
 server.listen(dashPort, () => {
   // eslint-disable-next-line no-console
   console.log(
-    `ArchRed dashboard: http://localhost:${dashPort}  target=${targetOrigin}` +
+    `RedSwarm dashboard: http://localhost:${dashPort}  target=${targetOrigin}` +
       (bundleSim ? ` (bundled simulator on :${simPort})` : " (external replica)")
   );
 });

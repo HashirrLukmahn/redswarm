@@ -1,14 +1,14 @@
-# ArchRed Safety Boundaries
+# RedSwarm Safety Boundaries
 
 Reference: [`build-spec.md`](../../build-spec.md) §0, §13–§19, §46, §59.
-ArchRed is security infrastructure and is tested as such (`tests/`).
+RedSwarm is security infrastructure and is tested as such (`tests/`).
 
 ## Hard boundaries (enforced in code + tests)
 
 1. **No production.** `EnvironmentSchema = local | staging`. There is no
    `production` enum value. `tests/scope.test.ts` asserts it is rejected.
 2. **Scope manifest required.** No run starts without a `ScopeManifest`. Staging
-   ownership is verified via `GET /.well-known/archred-target` before the run and
+   ownership is verified via `GET /.well-known/redswarm-target` before the run and
    host/transport/redirect checks run on **every** request (`policy/scope.ts`,
    `tools/staging-api.ts`).
 3. **Exact-host allowlist.** No wildcard/suffix matching. Off-host redirects →

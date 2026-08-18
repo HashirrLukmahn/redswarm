@@ -2,7 +2,7 @@ import type { ApiSurfaceSummary, ArchitectureSnapshot } from "../schemas/index.j
 
 /** Manually-populated architecture snapshot for the local simulator (spec §12). */
 export const SIM_ARCHITECTURE: ArchitectureSnapshot = {
-  applicationName: "ArchRed Local Fintech Simulator",
+  applicationName: "RedSwarm Local Fintech Simulator",
   components: [
     { id: "frontend", type: "frontend", description: "Customer web UI", dataClassification: ["pii"], trustZone: "edge" },
     { id: "api", type: "gateway", description: "Public API gateway", dataClassification: ["financial"], trustZone: "backend" },

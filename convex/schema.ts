@@ -2,7 +2,7 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 /**
- * ArchRed Convex schema (spec §35–§36). The realtime coordination/state plane.
+ * RedSwarm Convex schema (spec §35–§36). The realtime coordination/state plane.
  * Each table keeps a few indexed columns plus a `data` blob holding the full
  * structured record (the source of truth stays the typed Zod record; this
  * mirrors it for realtime/durability). Indexed heavily by runId per the spec.

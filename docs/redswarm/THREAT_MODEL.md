@@ -1,10 +1,10 @@
-# ArchRed Threat Model
+# RedSwarm Threat Model
 
 Reference: [`build-spec.md`](../../build-spec.md) §1–§3, §9–§10.
 
 ## Philosophy: invariant falsification
 
-ArchRed does not ask "can you find a vulnerability?" It asks "can you construct a
+RedSwarm does not ask "can you find a vulnerability?" It asks "can you construct a
 **counterexample** to this declared invariant?" This forces agents to reason about
 real fintech architecture instead of generic vulnerability names.
 

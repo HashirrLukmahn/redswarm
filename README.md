@@ -1,6 +1,6 @@
-# ArchRed — Autonomous Adversarial Architecture Testing Platform
+# RedSwarm — Autonomous Adversarial Architecture Testing Platform
 
-ArchRed deploys a bounded swarm of specialized adversarial AI workers against an
+RedSwarm deploys a bounded swarm of specialized adversarial AI workers against an
 explicitly authorized fintech **staging** environment. The workers attempt to
 _falsify_ declared financial and security invariants, execute only
 policy-approved experiments, capture reproducible evidence, independently verify
@@ -11,10 +11,10 @@ the swarm.
 Full design: [`build-spec.md`](build-spec.md). This is the reference MVP
 implementation of that spec.
 
-> **Safety:** ArchRed only operates against staging/sandbox targets it can verify
+> **Safety:** RedSwarm only operates against staging/sandbox targets it can verify
 > it owns. There is no `production` mode — it does not exist in the type system.
 > It performs no scanning, credential attacks, shell execution, or exfiltration.
-> See [`docs/archred/SAFETY_BOUNDARIES.md`](docs/archred/SAFETY_BOUNDARIES.md).
+> See [`docs/redswarm/SAFETY_BOUNDARIES.md`](docs/redswarm/SAFETY_BOUNDARIES.md).
 
 ## Quick start (offline, no API keys)
 
@@ -45,9 +45,9 @@ default; each integration is gated behind its env var:
 
 | Provider | Role | Env |
 |---|---|---|
-| **GMI Cloud** | primary swarm inference | `GMI_API_KEY`, `ARCHRED_MODEL_PROVIDER=gmi` |
+| **GMI Cloud** | primary swarm inference | `GMI_API_KEY`, `REDSWARM_MODEL_PROVIDER=gmi` |
 | **Exa** | defensive threat research | `EXA_API_KEY` |
-| **Apify** | controlled browser execution | `APIFY_API_TOKEN`, `APIFY_ARCHRED_ACTOR_ID` |
+| **Apify** | controlled browser execution | `APIFY_API_TOKEN`, `APIFY_REDSWARM_ACTOR_ID` |
 | **Gemini** | Chief Security Architect | `GEMINI_API_KEY` |
 | **Convex** | realtime state plane | swap `InMemoryStateStore` for a Convex `StateStore` |
 
@@ -71,7 +71,7 @@ sim/             local fake fintech simulator (the staging target)
 server/          SSE live dashboard
 cli/             demo + run entrypoints
 tests/           safety + orchestration + e2e tests
-docs/archred/    architecture, threat model, safety, how-to guides
+docs/redswarm/    architecture, threat model, safety, how-to guides
 ```
 
-See [`docs/archred/DEMO.md`](docs/archred/DEMO.md) for the hackathon demo script.
+See [`docs/redswarm/DEMO.md`](docs/redswarm/DEMO.md) for the hackathon demo script.

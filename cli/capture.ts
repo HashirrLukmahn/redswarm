@@ -13,20 +13,20 @@ import { renderConsolidatedReport } from "../security/services/report.js";
 
 /**
  * Capture a real (mock-provider) run into a static bundle for the GitHub Pages
- * replay. Emits site/run.js as `window.ARCHRED_RUN = {...}` so the static player
+ * replay. Emits site/run.js as `window.REDSWARM_RUN = {...}` so the static player
  * needs no fetch, no server, and no secrets. Nothing here is fabricated — it is
  * a real recorded run (deterministic offline provider + the local simulator).
  */
 async function main() {
-  const port = Number(process.env.ARCHRED_SIM_PORT ?? 4650);
-  const token = "archred-local-dev-token";
+  const port = Number(process.env.REDSWARM_SIM_PORT ?? 4650);
+  const token = "redswarm-local-dev-token";
   const sim = startSimServer(port, token);
 
   const scope = buildScopeFromEnv({ targetOrigin: `http://localhost:${port}`, allowedHosts: ["localhost"] });
   const config = buildRunConfigFromEnv({
-    name: "ArchRed public demo swarm",
+    name: "RedSwarm public demo swarm",
     scope,
-    agentCount: Number(process.env.ARCHRED_AGENT_COUNT ?? 50),
+    agentCount: Number(process.env.REDSWARM_AGENT_COUNT ?? 50),
     provider: "mock",
     enableResearch: true,
     enableArchitect: true,
@@ -56,7 +56,7 @@ async function main() {
 
   const outDir = join("site");
   mkdirSync(outDir, { recursive: true });
-  writeFileSync(join(outDir, "run.js"), `window.ARCHRED_RUN = ${JSON.stringify(bundle)};\n`, "utf8");
+  writeFileSync(join(outDir, "run.js"), `window.REDSWARM_RUN = ${JSON.stringify(bundle)};\n`, "utf8");
 
   const verified = bundle.findings.filter((f) => f.status === "VERIFIED").length;
   // eslint-disable-next-line no-console

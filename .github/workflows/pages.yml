@@ -27,7 +27,7 @@ jobs:
       # Regenerate the recorded run (offline mock provider — no secrets needed).
       - run: npm run capture
         env:
-          ARCHRED_AGENT_COUNT: "50"
+          REDSWARM_AGENT_COUNT: "50"
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

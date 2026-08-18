@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ArchRed — Security Lab (replay)</title>
+<title>RedSwarm — Security Lab (replay)</title>
 <style>
   :root {
     --bg:#0a0e14; --panel:#111823; --panel2:#0d141d; --line:#1e2a3a; --txt:#c7d3e0;
@@ -44,7 +44,7 @@
 </head>
 <body>
 <header>
-  <div><h1>ARCH<span>RED</span> · Security Lab <span style="font-size:11px;color:var(--muted)">replay</span></h1>
+  <div><h1>RED<span>SWARM</span> · Security Lab <span style="font-size:11px;color:var(--muted)">replay</span></h1>
   <div class="sub">Autonomous adversarial architecture testing — recorded run, controlled staging only</div></div>
   <div class="pill" id="status">loading…</div>
 </header>
@@ -79,7 +79,7 @@
 
 <script src="run.js"></script>
 <script>
-const R = window.ARCHRED_RUN || null;
+const R = window.REDSWARM_RUN || null;
 const el = id => document.getElementById(id);
 const grid = el("grid"), timeline = el("timeline");
 const esc = s => (s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));

@@ -7,7 +7,7 @@ import { extractJson } from "./model-provider.js";
 
 /**
  * Deterministic offline provider (spec §7, §66 Phase 2). Lets the entire loop
- * run and be tested without any API spend. It inspects the [[ARCHRED_TASK:x]]
+ * run and be tested without any API spend. It inspects the [[REDSWARM_TASK:x]]
  * marker embedded in system prompts to decide what structured output to emit.
  *
  * Crucially, the hypotheses/experiments it emits are executed for real against
@@ -19,7 +19,7 @@ export class MockProvider implements ModelProvider {
   constructor(private readonly latencyMs = 40) {}
 
   private taskOf(system: string): string {
-    const m = system.match(/\[\[ARCHRED_TASK:([a-z-]+)\]\]/i);
+    const m = system.match(/\[\[REDSWARM_TASK:([a-z-]+)\]\]/i);
     return m?.[1]?.toLowerCase() ?? "hypothesis";
   }
 
@@ -54,10 +54,10 @@ export class MockProvider implements ModelProvider {
           "Submitting the same synthetic transfer twice in quick succession produces two ledger entries and double debits the source account.",
         affectedComponents: ["api", "payments-service", "ledger"],
         steps: [
-          { kind: "state", inspect: "account", targetId: "ARCHRED_TEST_ACCOUNT_A", label: "before" },
-          { kind: "api", personaId: "customer_a", method: "POST", path: "/api/transfers", idempotencyKey: "retry-1", body: { from: "ARCHRED_TEST_ACCOUNT_A", to: "ARCHRED_TEST_ACCOUNT_B", amount: 25, idempotencyKey: "retry-1" } },
-          { kind: "api", personaId: "customer_a", method: "POST", path: "/api/transfers", idempotencyKey: "retry-1", body: { from: "ARCHRED_TEST_ACCOUNT_A", to: "ARCHRED_TEST_ACCOUNT_B", amount: 25, idempotencyKey: "retry-1" } },
-          { kind: "state", inspect: "account", targetId: "ARCHRED_TEST_ACCOUNT_A", label: "after" },
+          { kind: "state", inspect: "account", targetId: "REDSWARM_TEST_ACCOUNT_A", label: "before" },
+          { kind: "api", personaId: "customer_a", method: "POST", path: "/api/transfers", idempotencyKey: "retry-1", body: { from: "REDSWARM_TEST_ACCOUNT_A", to: "REDSWARM_TEST_ACCOUNT_B", amount: 25, idempotencyKey: "retry-1" } },
+          { kind: "api", personaId: "customer_a", method: "POST", path: "/api/transfers", idempotencyKey: "retry-1", body: { from: "REDSWARM_TEST_ACCOUNT_A", to: "REDSWARM_TEST_ACCOUNT_B", amount: 25, idempotencyKey: "retry-1" } },
+          { kind: "state", inspect: "account", targetId: "REDSWARM_TEST_ACCOUNT_A", label: "after" },
         ],
         risk: "SYNTHETIC_MUTATION" as const,
         violationSignal: "Source account debited twice for one intended transfer.",
@@ -72,7 +72,7 @@ export class MockProvider implements ModelProvider {
           "customer_a requests customer_b's account summary and receives balance data belonging to another tenant.",
         affectedComponents: ["api", "auth"],
         steps: [
-          { kind: "api", personaId: "customer_a", method: "GET", path: "/api/accounts/ARCHRED_TEST_ACCOUNT_B" },
+          { kind: "api", personaId: "customer_a", method: "GET", path: "/api/accounts/REDSWARM_TEST_ACCOUNT_B" },
         ],
         risk: "READ_ONLY" as const,
         violationSignal: "customer_a can read customer_b's balance.",
@@ -87,9 +87,9 @@ export class MockProvider implements ModelProvider {
           "Repeated reversal requests re-credit the account each time, minting synthetic funds.",
         affectedComponents: ["payments-service", "ledger"],
         steps: [
-          { kind: "state", inspect: "account", targetId: "ARCHRED_TEST_ACCOUNT_A", label: "before" },
-          { kind: "api", personaId: "customer_a", method: "POST", path: "/api/transfers", body: { from: "ARCHRED_TEST_ACCOUNT_A", to: "ARCHRED_TEST_ACCOUNT_B", amount: 10 } },
-          { kind: "state", inspect: "account", targetId: "ARCHRED_TEST_ACCOUNT_A", label: "after" },
+          { kind: "state", inspect: "account", targetId: "REDSWARM_TEST_ACCOUNT_A", label: "before" },
+          { kind: "api", personaId: "customer_a", method: "POST", path: "/api/transfers", body: { from: "REDSWARM_TEST_ACCOUNT_A", to: "REDSWARM_TEST_ACCOUNT_B", amount: 10 } },
+          { kind: "state", inspect: "account", targetId: "REDSWARM_TEST_ACCOUNT_A", label: "after" },
         ],
         risk: "SYNTHETIC_MUTATION" as const,
         violationSignal: "Reversal applied more than once.",
@@ -104,7 +104,7 @@ export class MockProvider implements ModelProvider {
           "A revoked persona's request is still honored by the mutation endpoint.",
         affectedComponents: ["auth", "api"],
         steps: [
-          { kind: "api", personaId: "revoked_user", method: "GET", path: "/api/accounts/ARCHRED_TEST_ACCOUNT_A" },
+          { kind: "api", personaId: "revoked_user", method: "GET", path: "/api/accounts/REDSWARM_TEST_ACCOUNT_A" },
         ],
         risk: "READ_ONLY" as const,
         violationSignal: "Revoked persona receives a successful protected response.",
@@ -128,7 +128,7 @@ export class MockProvider implements ModelProvider {
       invariantId: pick.invariantId || invariantId,
       architecturalAssumption: pick.architecturalAssumption,
       proposedFailureMode: pick.proposedFailureMode,
-      prerequisites: ["Synthetic fixtures ARCHRED_TEST_ACCOUNT_A/B exist"],
+      prerequisites: ["Synthetic fixtures REDSWARM_TEST_ACCOUNT_A/B exist"],
       affectedComponents: pick.affectedComponents,
       confidence: 0.4 + (seed % 40) / 100,
       noveltyReason: "Combines a realistic workflow with an architectural assumption.",
@@ -197,7 +197,7 @@ export class MockProvider implements ModelProvider {
           implementationComplexity: "MEDIUM",
           expectedRiskReduction: "HIGH",
           migrationNotes: ["Backfill existing transactions with synthetic keys"],
-          validationPlan: ["Re-run ArchRed concurrency + idempotency swarm"],
+          validationPlan: ["Re-run RedSwarm concurrency + idempotency swarm"],
         },
       ],
       prioritizedRoadmap: [

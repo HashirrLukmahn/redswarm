@@ -4,9 +4,9 @@
 #              simulator standing in for a cloud.az2.ai replica. Replace the
 #              `image`/`build` below with your real staging image to test a
 #              faithful clone with prod's exact config but SYNTHETIC data +
-#              SANDBOX provider credentials. See docs/archred/TARGETING.md.
+#              SANDBOX provider credentials. See docs/redswarm/TARGETING.md.
 #
-#   archred  = the tester (engine + live dashboard). It never bundles its own
+#   redswarm  = the tester (engine + live dashboard). It never bundles its own
 #              simulator here; it operates ONLY on `target` via the verified
 #              ScopeManifest. Prod is not selectable — there is no production mode.
 #
@@ -20,18 +20,18 @@ services:
       dockerfile: Dockerfile
     command: ["npx", "tsx", "sim/server.ts"]
     environment:
-      ARCHRED_SIM_PORT: "4600"
+      REDSWARM_SIM_PORT: "4600"
       # Staging ownership marker + test-hook guard token.
-      ARCHRED_STAGING_VERIFICATION_TOKEN: "${ARCHRED_STAGING_VERIFICATION_TOKEN:-archred-local-dev-token}"
+      REDSWARM_STAGING_VERIFICATION_TOKEN: "${REDSWARM_STAGING_VERIFICATION_TOKEN:-redswarm-local-dev-token}"
     expose:
       - "4600"
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:4600/.well-known/archred-target"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:4600/.well-known/redswarm-target"]
       interval: 3s
       timeout: 2s
       retries: 10
 
-  archred:
+  redswarm:
     build:
       context: .
       dockerfile: Dockerfile
@@ -40,18 +40,18 @@ services:
       target:
         condition: service_healthy
     environment:
-      ARCHRED_DASHBOARD_PORT: "4610"
+      REDSWARM_DASHBOARD_PORT: "4610"
       # Operate on the replica, not a bundled sim.
-      ARCHRED_BUNDLE_SIM: "false"
-      ARCHRED_TARGET_ORIGIN: "http://target:4600"
-      ARCHRED_ALLOWED_HOSTS: "target"
+      REDSWARM_BUNDLE_SIM: "false"
+      REDSWARM_TARGET_ORIGIN: "http://target:4600"
+      REDSWARM_ALLOWED_HOSTS: "target"
       # Private compose network → local environment (permits http between
       # services). Internet-facing staging should use https + "staging".
-      ARCHRED_ENVIRONMENT: "local"
-      ARCHRED_STAGING_VERIFICATION_TOKEN: "${ARCHRED_STAGING_VERIFICATION_TOKEN:-archred-local-dev-token}"
+      REDSWARM_ENVIRONMENT: "local"
+      REDSWARM_STAGING_VERIFICATION_TOKEN: "${REDSWARM_STAGING_VERIFICATION_TOKEN:-redswarm-local-dev-token}"
       # Reasoning provider. Default offline; set gmi + GMI_API_KEY for real inference.
-      ARCHRED_MODEL_PROVIDER: "${ARCHRED_MODEL_PROVIDER:-mock}"
-      ARCHRED_AGENT_COUNT: "${ARCHRED_AGENT_COUNT:-50}"
+      REDSWARM_MODEL_PROVIDER: "${REDSWARM_MODEL_PROVIDER:-mock}"
+      REDSWARM_AGENT_COUNT: "${REDSWARM_AGENT_COUNT:-50}"
       GMI_API_KEY: "${GMI_API_KEY:-}"
       GMI_MODEL: "${GMI_MODEL:-}"
       GEMINI_API_KEY: "${GEMINI_API_KEY:-}"

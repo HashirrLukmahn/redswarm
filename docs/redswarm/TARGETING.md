@@ -2,19 +2,19 @@
 
 Reference: [`build-spec.md`](../../build-spec.md) §13, §14, §36, §60.
 
-ArchRed never touches production. It operates only on the origin in the verified
+RedSwarm never touches production. It operates only on the origin in the verified
 `ScopeManifest`. The safe pattern is: stand up an **ephemeral container that clones
-prod's configuration but isolates its data and side effects**, then point ArchRed
+prod's configuration but isolates its data and side effects**, then point RedSwarm
 at it. Prod is not selectable — there is no `production` environment value.
 
 ## Quick start (built-in stand-in)
 
 ```bash
-docker compose up --build      # target = built-in simulator, archred = tester
+docker compose up --build      # target = built-in simulator, redswarm = tester
 # open http://localhost:4610 and RELEASE THE SWARM
 ```
 
-`target` is the product under test; `archred` is the tester and only ever calls
+`target` is the product under test; `redswarm` is the tester and only ever calls
 `http://target:4600` via the gateway.
 
 ## Swapping in a real cloud.az2.ai replica
@@ -39,7 +39,7 @@ Replace the `target` service in `docker-compose.yml`:
 | Runtime/framework versions | Prod secrets → **sandbox** credentials |
 | Service graph (ledger, payments, queue) | Real external providers → **sandbox/mock** (no real money, emails, webhooks) |
 
-ArchRed executes *real* mutating experiments and measures *real* economic effects.
+RedSwarm executes *real* mutating experiments and measures *real* economic effects.
 Against a sandboxed replica, a verified FI-002 means a synthetic double-spend.
 Against prod's payment rail it would mean actually moving money twice — which the
 spec forbids (no real economic side effects, no exfiltration, no destructive prod
@@ -47,9 +47,9 @@ testing).
 
 ## The three test-only hooks the target must expose
 
-Guard all three with `ARCHRED_STAGING_VERIFICATION_TOKEN` (`x-archred-token`):
+Guard all three with `REDSWARM_STAGING_VERIFICATION_TOKEN` (`x-redswarm-token`):
 
-1. `GET /.well-known/archred-target` → `{"environment":"staging","testingEnabled":true,"targetId":"…"}`
+1. `GET /.well-known/redswarm-target` → `{"environment":"staging","testingEnabled":true,"targetId":"…"}`
 2. Read-only state inspector → balances / ledger / tx counts (drives deterministic
    invariant checks). Example: `GET /test/state/account/:id`.
 3. `POST /test/reset` → restore synthetic fixtures between reproductions.
@@ -59,16 +59,16 @@ Guard all three with `ARCHRED_STAGING_VERIFICATION_TOKEN` (`x-archred-token`):
 Run a small **sidecar** beside the replica that serves these three endpoints by
 querying the synthetic DB directly (marker is static; state inspector = read-only
 SQL; reset = re-run the seed script). The app image stays byte-identical to prod;
-only the sidecar is test-aware. ArchRed points at the sidecar's origin.
+only the sidecar is test-aware. RedSwarm points at the sidecar's origin.
 
 ## Persona vault
 
 Map synthetic accounts to **sandbox** tokens in `security/fixtures/personas.ts`
-(or a Convex-backed vault). ArchRed injects these server-side; the model only ever
+(or a Convex-backed vault). RedSwarm injects these server-side; the model only ever
 sees persona ids, never credentials.
 
 ## Lifecycle
 
-`docker compose up` (or a CI job) provisions the replica → ArchRed verifies the
+`docker compose up` (or a CI job) provisions the replica → RedSwarm verifies the
 staging marker → runs the swarm → captures evidence → `docker compose down`
 disposes the container. Nothing persists into prod; the replica is disposable.

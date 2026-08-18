@@ -7,7 +7,7 @@ import { MockBrowserProvider } from "../security/providers/apify.js";
 import { ROLE_CAPABILITIES, EXECUTOR_CAPABILITIES } from "../security/policy/capabilities.js";
 import { ScopeManifestSchema } from "../security/schemas/index.js";
 
-const TOKEN = "archred-local-dev-token";
+const TOKEN = "redswarm-local-dev-token";
 
 function simFetch(sim: FintechSimulator): typeof fetch {
   return (async (input: any, init: any = {}) => {
@@ -72,7 +72,7 @@ describe("ToolGateway safety (spec §17, §64)", () => {
 
   it("honors the kill switch — schedules no tool work when cancelled", async () => {
     const gw = makeGateway(true);
-    const r = await gw.execute(executor, { tool: "staging.readState", args: { accountId: "ARCHRED_TEST_ACCOUNT_A", label: "x" } }, ctx);
+    const r = await gw.execute(executor, { tool: "staging.readState", args: { accountId: "REDSWARM_TEST_ACCOUNT_A", label: "x" } }, ctx);
     expect(r.ok).toBe(false);
     expect(r.blocked).toMatch(/cancelled/);
   });
@@ -83,7 +83,7 @@ describe("ToolGateway safety (spec §17, §64)", () => {
     // the request must act as customer_a (who cannot read account B).
     const r = await gw.execute(
       executor,
-      { tool: "staging.request", args: { personaId: "customer_a", method: "GET", path: "/api/accounts/ARCHRED_TEST_ACCOUNT_B", headers: { Authorization: "Bearer tok_customer_b" } } },
+      { tool: "staging.request", args: { personaId: "customer_a", method: "GET", path: "/api/accounts/REDSWARM_TEST_ACCOUNT_B", headers: { Authorization: "Bearer tok_customer_b" } } },
       ctx
     );
     expect(r.ok).toBe(true);
@@ -101,7 +101,7 @@ describe("ToolGateway safety (spec §17, §64)", () => {
     const gw = makeGateway();
     await gw.execute(
       executor,
-      { tool: "staging.request", args: { personaId: "customer_a", method: "POST", path: "/api/transfers", body: { from: "ARCHRED_TEST_ACCOUNT_A", to: "ARCHRED_TEST_ACCOUNT_B", amount: 5, token: "sk-supersecret1234567890" } } },
+      { tool: "staging.request", args: { personaId: "customer_a", method: "POST", path: "/api/transfers", body: { from: "REDSWARM_TEST_ACCOUNT_A", to: "REDSWARM_TEST_ACCOUNT_B", amount: 5, token: "sk-supersecret1234567890" } } },
       ctx
     );
     const evidence = store.listEvidence("run_test");

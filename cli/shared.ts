@@ -8,7 +8,7 @@ export function httpFixtureReset(scope: ScopeManifest, fetchImpl: typeof fetch =
       await fetchImpl(url, {
         method: "POST",
         headers: scope.ownershipVerificationToken
-          ? { "x-archred-token": scope.ownershipVerificationToken }
+          ? { "x-redswarm-token": scope.ownershipVerificationToken }
           : {},
       });
     } catch {

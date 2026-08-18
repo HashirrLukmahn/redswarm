@@ -1,4 +1,4 @@
-# ArchRed Architecture
+# RedSwarm Architecture
 
 Reference: [`build-spec.md`](../../build-spec.md) §4. This document maps the five
 planes onto the code.
@@ -49,4 +49,4 @@ independent Verifier reproduction → VerifiedFinding
 `StateStore` (`security/state/store.ts`) is the coordination plane interface. The
 default `InMemoryStateStore` powers the SSE dashboard. A Convex-backed store
 implementing the same interface drops in without touching orchestration (spec
-§35–§36); ArchRed state stays separate from the app's financial DB.
+§35–§36); RedSwarm state stays separate from the app's financial DB.

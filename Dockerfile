@@ -1,7 +1,7 @@
-# ArchRed image — runs both the tester (engine + dashboard) and, by default,
+# RedSwarm image — runs both the tester (engine + dashboard) and, by default,
 # the built-in fintech simulator that stands in for the product under test.
 # Swap the `target` service in docker-compose.yml for your real staging image
-# to test a faithful replica of cloud.az2.ai (see docs/archred/TARGETING.md).
+# to test a faithful replica of cloud.az2.ai (see docs/redswarm/TARGETING.md).
 FROM node:20-alpine
 
 WORKDIR /app

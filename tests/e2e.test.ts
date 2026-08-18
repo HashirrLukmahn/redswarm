@@ -9,7 +9,7 @@ import { MockBrowserProvider } from "../security/providers/apify.js";
 import { httpFixtureReset } from "../cli/shared.js";
 
 const PORT = 4791;
-const TOKEN = "archred-local-dev-token";
+const TOKEN = "redswarm-local-dev-token";
 let sim: { close: () => Promise<void> } | undefined;
 afterEach(async () => {
   if (sim) await sim.close();

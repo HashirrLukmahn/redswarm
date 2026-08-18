@@ -15,15 +15,15 @@ export interface PersonaSecret {
 }
 
 export const PERSONA_VAULT: PersonaSecret[] = [
-  { id: "customer_a", description: "ordinary customer", token: "tok_customer_a", ownsAccount: "ARCHRED_TEST_ACCOUNT_A" },
-  { id: "customer_b", description: "ordinary customer (different tenant)", token: "tok_customer_b", ownsAccount: "ARCHRED_TEST_ACCOUNT_B" },
-  { id: "customer_c", description: "ordinary customer", token: "tok_customer_c", ownsAccount: "ARCHRED_TEST_ACCOUNT_C" },
-  { id: "org_a_admin", description: "administrator of organization A", token: "tok_org_a_admin", ownsAccount: "ARCHRED_TEST_ACCOUNT_A" },
-  { id: "org_a_member", description: "member of organization A", token: "tok_org_a_member", ownsAccount: "ARCHRED_TEST_ACCOUNT_A" },
-  { id: "org_b_admin", description: "administrator of organization B", token: "tok_org_b_admin", ownsAccount: "ARCHRED_TEST_ACCOUNT_B" },
-  { id: "org_b_member", description: "member of organization B", token: "tok_org_b_member", ownsAccount: "ARCHRED_TEST_ACCOUNT_B" },
-  { id: "revoked_user", description: "user whose session was revoked", token: "tok_revoked", ownsAccount: "ARCHRED_TEST_ACCOUNT_A", revoked: true },
-  { id: "downgraded_user", description: "recently downgraded user", token: "tok_downgraded", ownsAccount: "ARCHRED_TEST_ACCOUNT_A" },
+  { id: "customer_a", description: "ordinary customer", token: "tok_customer_a", ownsAccount: "REDSWARM_TEST_ACCOUNT_A" },
+  { id: "customer_b", description: "ordinary customer (different tenant)", token: "tok_customer_b", ownsAccount: "REDSWARM_TEST_ACCOUNT_B" },
+  { id: "customer_c", description: "ordinary customer", token: "tok_customer_c", ownsAccount: "REDSWARM_TEST_ACCOUNT_C" },
+  { id: "org_a_admin", description: "administrator of organization A", token: "tok_org_a_admin", ownsAccount: "REDSWARM_TEST_ACCOUNT_A" },
+  { id: "org_a_member", description: "member of organization A", token: "tok_org_a_member", ownsAccount: "REDSWARM_TEST_ACCOUNT_A" },
+  { id: "org_b_admin", description: "administrator of organization B", token: "tok_org_b_admin", ownsAccount: "REDSWARM_TEST_ACCOUNT_B" },
+  { id: "org_b_member", description: "member of organization B", token: "tok_org_b_member", ownsAccount: "REDSWARM_TEST_ACCOUNT_B" },
+  { id: "revoked_user", description: "user whose session was revoked", token: "tok_revoked", ownsAccount: "REDSWARM_TEST_ACCOUNT_A", revoked: true },
+  { id: "downgraded_user", description: "recently downgraded user", token: "tok_downgraded", ownsAccount: "REDSWARM_TEST_ACCOUNT_A" },
   { id: "pending_user", description: "invited but not fully activated user", token: "tok_pending" },
 ];
 

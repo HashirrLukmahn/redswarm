@@ -1,8 +1,8 @@
-# ArchRed — Autonomous Adversarial Architecture Testing Platform
+# RedSwarm — Autonomous Adversarial Architecture Testing Platform
 
 ## 0. Instructions to the Coding Agent
 
-You are implementing a security-testing subsystem called **ArchRed** inside or alongside an existing fintech application.
+You are implementing a security-testing subsystem called **RedSwarm** inside or alongside an existing fintech application.
 
 Do not rewrite the existing application architecture unnecessarily.
 
@@ -102,7 +102,7 @@ The product should:
 
 # 2. Product Philosophy
 
-ArchRed is built around:
+RedSwarm is built around:
 
 ## Invariant falsification
 
@@ -312,17 +312,17 @@ Suitable implementation:
 Environment defaults:
 
 ```env
-ARCHRED_AGENT_COUNT=100
+REDSWARM_AGENT_COUNT=100
 
-ARCHRED_MODEL_CONCURRENCY=20
-ARCHRED_API_CONCURRENCY=8
-ARCHRED_BROWSER_CONCURRENCY=3
-ARCHRED_RESEARCH_CONCURRENCY=4
-ARCHRED_VERIFIER_CONCURRENCY=6
+REDSWARM_MODEL_CONCURRENCY=20
+REDSWARM_API_CONCURRENCY=8
+REDSWARM_BROWSER_CONCURRENCY=3
+REDSWARM_RESEARCH_CONCURRENCY=4
+REDSWARM_VERIFIER_CONCURRENCY=6
 
-ARCHRED_MAX_MODEL_CALLS_PER_RUN=750
-ARCHRED_MAX_TOOL_CALLS_PER_RUN=1000
-ARCHRED_MAX_RUN_MINUTES=15
+REDSWARM_MAX_MODEL_CALLS_PER_RUN=750
+REDSWARM_MAX_TOOL_CALLS_PER_RUN=1000
+REDSWARM_MAX_RUN_MINUTES=15
 ```
 
 Do not assume these are safe maximums.
@@ -729,7 +729,7 @@ There should literally be no `"production"` enum value.
 Strongly prefer adding a staging-only endpoint such as:
 
 ```text
-GET /.well-known/archred-target
+GET /.well-known/redswarm-target
 ```
 
 It should return:
@@ -1458,7 +1458,7 @@ Use Apify as the browser execution layer.
 
 Apify Actors are serverless jobs receiving structured JSON input, and Apify documents browser automation using Playwright as well as Actor-run APIs.
 
-Create an ArchRed browser Actor or equivalent integration.
+Create an RedSwarm browser Actor or equivalent integration.
 
 Input:
 
@@ -1545,7 +1545,7 @@ Convex's realtime query model is appropriate for updating the dashboard as run s
 
 Do NOT migrate the existing fintech database to Convex.
 
-ArchRed state is separate from the application's transactional financial state.
+RedSwarm state is separate from the application's transactional financial state.
 
 ---
 
@@ -1782,7 +1782,7 @@ IdentityTestProvider
     └── WorkOSIdentityProvider
 ```
 
-Do not couple ArchRed to WorkOS.
+Do not couple RedSwarm to WorkOS.
 
 ---
 
@@ -1830,9 +1830,9 @@ All tests must use synthetic accounts.
 Create labels like:
 
 ```text
-ARCHRED_TEST_ACCOUNT_A
-ARCHRED_TEST_ACCOUNT_B
-ARCHRED_TEST_ORG_A
+REDSWARM_TEST_ACCOUNT_A
+REDSWARM_TEST_ACCOUNT_B
+REDSWARM_TEST_ORG_A
 ```
 
 Never discover random customer IDs.
@@ -1842,7 +1842,7 @@ Prefer resetting the synthetic fixture set before every full run.
 Implement:
 
 ```ts
-resetArchRedFixtures()
+resetRedSwarmFixtures()
 ```
 
 if feasible.
@@ -2406,22 +2406,22 @@ or equivalent route for the existing framework.
 Create `.env.example`.
 
 ```env
-# ArchRed
-ARCHRED_ENABLED=false
+# RedSwarm
+REDSWARM_ENABLED=false
 
-ARCHRED_AGENT_COUNT=25
-ARCHRED_MODEL_CONCURRENCY=10
-ARCHRED_API_CONCURRENCY=5
-ARCHRED_BROWSER_CONCURRENCY=2
-ARCHRED_VERIFIER_CONCURRENCY=4
+REDSWARM_AGENT_COUNT=25
+REDSWARM_MODEL_CONCURRENCY=10
+REDSWARM_API_CONCURRENCY=5
+REDSWARM_BROWSER_CONCURRENCY=2
+REDSWARM_VERIFIER_CONCURRENCY=4
 
-ARCHRED_MAX_MODEL_CALLS=500
-ARCHRED_MAX_TOOL_CALLS=500
-ARCHRED_MAX_RUN_MINUTES=15
+REDSWARM_MAX_MODEL_CALLS=500
+REDSWARM_MAX_TOOL_CALLS=500
+REDSWARM_MAX_RUN_MINUTES=15
 
-ARCHRED_TARGET_ORIGIN=
-ARCHRED_ALLOWED_HOSTS=
-ARCHRED_STAGING_VERIFICATION_TOKEN=
+REDSWARM_TARGET_ORIGIN=
+REDSWARM_ALLOWED_HOSTS=
+REDSWARM_STAGING_VERIFICATION_TOKEN=
 
 # GMI
 GMI_API_KEY=
@@ -2433,7 +2433,7 @@ EXA_API_KEY=
 
 # Apify
 APIFY_API_TOKEN=
-APIFY_ARCHRED_ACTOR_ID=
+APIFY_REDSWARM_ACTOR_ID=
 
 # Gemini
 GEMINI_API_KEY=
@@ -2614,9 +2614,9 @@ Verify orchestration without real API spend.
 
 ---
 
-# 64. Security Tests for ArchRed Itself
+# 64. Security Tests for RedSwarm Itself
 
-ArchRed is security infrastructure and must be tested itself.
+RedSwarm is security infrastructure and must be tested itself.
 
 At minimum:
 
@@ -2704,7 +2704,7 @@ transactions
 roles
 ```
 
-It exists solely to test ArchRed orchestration.
+It exists solely to test RedSwarm orchestration.
 
 Do NOT intentionally weaken the real fintech application to make the demo work.
 
@@ -3138,7 +3138,7 @@ evidence
 verifier
 ```
 
-At this point ArchRed becomes a security-testing system rather than a brainstorming swarm.
+At this point RedSwarm becomes a security-testing system rather than a brainstorming swarm.
 
 ---
 
@@ -3190,12 +3190,12 @@ in that order unless demo needs dictate otherwise.
 Once implementation works, create:
 
 ```text
-docs/archred/ARCHITECTURE.md
-docs/archred/THREAT_MODEL.md
-docs/archred/ADDING_AGENT_ROLES.md
-docs/archred/ADDING_INVARIANTS.md
-docs/archred/SAFETY_BOUNDARIES.md
-docs/archred/DEMO.md
+docs/redswarm/ARCHITECTURE.md
+docs/redswarm/THREAT_MODEL.md
+docs/redswarm/ADDING_AGENT_ROLES.md
+docs/redswarm/ADDING_INVARIANTS.md
+docs/redswarm/SAFETY_BOUNDARIES.md
+docs/redswarm/DEMO.md
 ```
 
 Also create concise project instructions for whichever coding-agent environment is present.
@@ -3224,4 +3224,4 @@ The architecture should make scaling the number of logical agents a configuratio
 
 The completed system should make this statement true:
 
-> ArchRed deploys a bounded swarm of specialized adversarial AI workers against an explicitly authorized fintech staging environment. The workers attempt to falsify declared financial and security invariants, execute only policy-approved experiments, capture reproducible evidence, independently verify candidate failures, identify systemic architectural root causes, and propose remediations while measuring the inference performance required to coordinate the swarm.
+> RedSwarm deploys a bounded swarm of specialized adversarial AI workers against an explicitly authorized fintech staging environment. The workers attempt to falsify declared financial and security invariants, execute only policy-approved experiments, capture reproducible evidence, independently verify candidate failures, identify systemic architectural root causes, and propose remediations while measuring the inference performance required to coordinate the swarm.

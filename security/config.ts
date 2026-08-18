@@ -14,12 +14,12 @@ function num(name: string, fallback: number): number {
 }
 
 export function buildScopeFromEnv(overrides: Partial<ScopeManifest> = {}): ScopeManifest {
-  const origin = process.env.ARCHRED_TARGET_ORIGIN ?? "http://localhost:4600";
-  const hosts = (process.env.ARCHRED_ALLOWED_HOSTS ?? "localhost")
+  const origin = process.env.REDSWARM_TARGET_ORIGIN ?? "http://localhost:4600";
+  const hosts = (process.env.REDSWARM_ALLOWED_HOSTS ?? "localhost")
     .split(",")
     .map((h) => h.trim())
     .filter(Boolean);
-  const environment = process.env.ARCHRED_ENVIRONMENT === "local" ? "local" : "staging";
+  const environment = process.env.REDSWARM_ENVIRONMENT === "local" ? "local" : "staging";
   return ScopeManifestSchema.parse({
     environment,
     targetOrigin: origin,
@@ -29,39 +29,39 @@ export function buildScopeFromEnv(overrides: Partial<ScopeManifest> = {}): Scope
     testPersonaIds: publicPersonas().map((p) => p.id),
     syntheticDataOnly: true,
     maxRequestsPerSecond: 25,
-    maxRequestsPerRun: num("ARCHRED_MAX_TOOL_CALLS", 500),
-    maxBrowserSessions: num("ARCHRED_BROWSER_CONCURRENCY", 2),
+    maxRequestsPerRun: num("REDSWARM_MAX_TOOL_CALLS", 500),
+    maxBrowserSessions: num("REDSWARM_BROWSER_CONCURRENCY", 2),
     allowMutation: true,
     allowConcurrencyExperiments: true,
     allowExternalProviderCalls: false,
     ownershipVerificationToken:
-      process.env.ARCHRED_STAGING_VERIFICATION_TOKEN ?? "archred-local-dev-token",
+      process.env.REDSWARM_STAGING_VERIFICATION_TOKEN ?? "redswarm-local-dev-token",
     ...overrides,
   });
 }
 
 export function buildRunConfigFromEnv(overrides: Partial<RunConfig> = {}): RunConfig {
-  const agentCount = overrides.agentCount ?? num("ARCHRED_AGENT_COUNT", 25);
+  const agentCount = overrides.agentCount ?? num("REDSWARM_AGENT_COUNT", 25);
   const scope = overrides.scope ?? buildScopeFromEnv();
-  const providerName = (process.env.ARCHRED_MODEL_PROVIDER ?? "mock") as "mock" | "gmi";
+  const providerName = (process.env.REDSWARM_MODEL_PROVIDER ?? "mock") as "mock" | "gmi";
   return {
-    name: overrides.name ?? `ArchRed run ${new Date().toISOString()}`,
+    name: overrides.name ?? `RedSwarm run ${new Date().toISOString()}`,
     scope,
     riskMode: overrides.riskMode ?? "SANDBOX_MUTATING",
     agentCount,
-    modelConcurrency: overrides.modelConcurrency ?? num("ARCHRED_MODEL_CONCURRENCY", 10),
-    browserConcurrency: overrides.browserConcurrency ?? num("ARCHRED_BROWSER_CONCURRENCY", 2),
-    apiConcurrency: overrides.apiConcurrency ?? num("ARCHRED_API_CONCURRENCY", 5),
-    verifierConcurrency: overrides.verifierConcurrency ?? num("ARCHRED_VERIFIER_CONCURRENCY", 4),
-    researchConcurrency: overrides.researchConcurrency ?? num("ARCHRED_RESEARCH_CONCURRENCY", 4),
+    modelConcurrency: overrides.modelConcurrency ?? num("REDSWARM_MODEL_CONCURRENCY", 10),
+    browserConcurrency: overrides.browserConcurrency ?? num("REDSWARM_BROWSER_CONCURRENCY", 2),
+    apiConcurrency: overrides.apiConcurrency ?? num("REDSWARM_API_CONCURRENCY", 5),
+    verifierConcurrency: overrides.verifierConcurrency ?? num("REDSWARM_VERIFIER_CONCURRENCY", 4),
+    researchConcurrency: overrides.researchConcurrency ?? num("REDSWARM_RESEARCH_CONCURRENCY", 4),
     threatFamilies: overrides.threatFamilies ?? [],
     budget: overrides.budget ?? {
-      maxModelCalls: num("ARCHRED_MAX_MODEL_CALLS", 500),
-      maxToolCalls: num("ARCHRED_MAX_TOOL_CALLS", 500),
+      maxModelCalls: num("REDSWARM_MAX_MODEL_CALLS", 500),
+      maxToolCalls: num("REDSWARM_MAX_TOOL_CALLS", 500),
       maxBrowserRuns: 20,
       maxTokens: 5_000_000,
-      maxDurationMs: num("ARCHRED_MAX_RUN_MINUTES", 15) * 60_000,
-      maxRequests: num("ARCHRED_MAX_TOOL_CALLS", 500),
+      maxDurationMs: num("REDSWARM_MAX_RUN_MINUTES", 15) * 60_000,
+      maxRequests: num("REDSWARM_MAX_TOOL_CALLS", 500),
     },
     provider: overrides.provider ?? providerName,
     model: overrides.model ?? process.env.GMI_MODEL ?? "mock-model",
@@ -89,6 +89,6 @@ export function makeExaProvider(): ExaProvider {
 
 export function makeBrowserProvider(): BrowserProvider {
   const token = process.env.APIFY_API_TOKEN;
-  const actor = process.env.APIFY_ARCHRED_ACTOR_ID;
+  const actor = process.env.APIFY_REDSWARM_ACTOR_ID;
   return token && actor ? new ApifyBrowserProvider(token, actor) : new MockBrowserProvider();
 }

@@ -1,4 +1,4 @@
-# ArchRed Report — ArchRed demo swarm
+# RedSwarm Report — RedSwarm demo swarm
 
 > _Example artifact: real output of the report renderer from `npm run demo` (50 agents, offline mock provider) — not hand-written. Served live at `GET /api/runs/<runId>/report` and written to `reports/<runId>/report.md`._
 
@@ -23,11 +23,11 @@ _Addresses findings:_ find_69f4ffc0-dd0
 - **Current risk:** Retries and replays can double economic effects.
 - **Proposed change:** Require an idempotency key per logical transaction, persisted atomically with the ledger write.
 - **Complexity:** MEDIUM · **Risk reduction:** HIGH
-- **Validation:** Re-run ArchRed concurrency + idempotency swarm
+- **Validation:** Re-run RedSwarm concurrency + idempotency swarm
 
 > The dominant architectural weakness is the absence of a shared idempotency boundary for economic effects.
 
-_Recommendations require human review; ArchRed never auto-applies architecture changes._
+_Recommendations require human review; RedSwarm never auto-applies architecture changes._
 
 ## Verified findings
 
@@ -52,4 +52,4 @@ _Recommendations require human review; ArchRed never auto-applies architecture c
 - verified/100 agents 2.00 · verified/100 model-calls 2.00
 
 ---
-_Generated 2026-08-18T03:03:04.702Z by ArchRed. Hypothesis → CandidateFinding → VerifiedFinding; verdicts are deterministic, not model belief._
+_Generated 2026-08-18T03:03:04.702Z by RedSwarm. Hypothesis → CandidateFinding → VerifiedFinding; verdicts are deterministic, not model belief._

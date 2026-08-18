@@ -1,4 +1,4 @@
-# ArchRed Demo Script
+# RedSwarm Demo Script
 
 Reference: [`build-spec.md`](../../build-spec.md) §68.
 
@@ -37,7 +37,7 @@ Closing line:
 ## Headless version
 
 ```bash
-ARCHRED_AGENT_COUNT=50 npm run demo
+REDSWARM_AGENT_COUNT=50 npm run demo
 ```
 
 Prints the full event timeline, findings, and GMI performance summary to stdout.
@@ -46,7 +46,7 @@ Prints the full event timeline, findings, and GMI performance summary to stdout.
 
 ```bash
 export GMI_API_KEY=...     # and GMI_MODEL=...
-ARCHRED_MODEL_PROVIDER=gmi ARCHRED_AGENT_COUNT=100 npm run demo
+REDSWARM_MODEL_PROVIDER=gmi REDSWARM_AGENT_COUNT=100 npm run demo
 ```
 
 Everything else (safety, verification, deterministic checks) is identical — only

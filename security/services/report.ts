@@ -80,7 +80,7 @@ export function renderConsolidatedReport(store: StateStore, runId: string): stri
   const m = run?.metrics;
 
   const L: string[] = [];
-  L.push(`# ArchRed Report — ${run?.name ?? runId}`);
+  L.push(`# RedSwarm Report — ${run?.name ?? runId}`);
   L.push("");
   L.push(`Run \`${runId}\` · status **${run?.status}** · target ${run?.targetOrigin}`);
   L.push("");
@@ -119,7 +119,7 @@ export function renderConsolidatedReport(store: StateStore, runId: string): stri
     L.push("");
     L.push(`> ${assessment.executiveSummary}`);
     L.push("");
-    L.push("_Recommendations require human review; ArchRed never auto-applies architecture changes._");
+    L.push("_Recommendations require human review; RedSwarm never auto-applies architecture changes._");
   }
 
   L.push("");
@@ -169,7 +169,7 @@ export function renderConsolidatedReport(store: StateStore, runId: string): stri
 
   L.push("");
   L.push("---");
-  L.push(`_Generated ${new Date().toISOString()} by ArchRed. Hypothesis → CandidateFinding → VerifiedFinding; verdicts are deterministic, not model belief._`);
+  L.push(`_Generated ${new Date().toISOString()} by RedSwarm. Hypothesis → CandidateFinding → VerifiedFinding; verdicts are deterministic, not model belief._`);
   return L.join("\n");
 }
 

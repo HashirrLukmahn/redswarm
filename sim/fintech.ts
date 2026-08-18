@@ -1,5 +1,5 @@
 /**
- * Local fake fintech simulator (spec §65). It exists ONLY to exercise ArchRed
+ * Local fake fintech simulator (spec §65). It exists ONLY to exercise RedSwarm
  * orchestration. It models users, accounts, synthetic balances, transactions,
  * roles, and a test-only state endpoint.
  *
@@ -40,11 +40,11 @@ export class FintechSimulator {
   private auditEvents: { action: string; account: string; at: number }[] = [];
   private txCounter = 0;
 
-  constructor(private readonly verificationToken = "archred-local-dev-token") {
+  constructor(private readonly verificationToken = "redswarm-local-dev-token") {
     this.reset();
   }
 
-  /** resetArchRedFixtures() (spec §43): restore synthetic fixtures. */
+  /** resetRedSwarmFixtures() (spec §43): restore synthetic fixtures. */
   reset(): void {
     this.accounts.clear();
     this.ledger = [];
@@ -53,24 +53,24 @@ export class FintechSimulator {
     this.txCounter = 0;
 
     const seed: Array<[string, string, string, number]> = [
-      ["ARCHRED_TEST_ACCOUNT_A", "customer_a", "ARCHRED_TEST_ORG_A", 1000],
-      ["ARCHRED_TEST_ACCOUNT_B", "customer_b", "ARCHRED_TEST_ORG_B", 1000],
-      ["ARCHRED_TEST_ACCOUNT_C", "customer_c", "ARCHRED_TEST_ORG_A", 1000],
+      ["REDSWARM_TEST_ACCOUNT_A", "customer_a", "REDSWARM_TEST_ORG_A", 1000],
+      ["REDSWARM_TEST_ACCOUNT_B", "customer_b", "REDSWARM_TEST_ORG_B", 1000],
+      ["REDSWARM_TEST_ACCOUNT_C", "customer_c", "REDSWARM_TEST_ORG_A", 1000],
     ];
     for (const [id, owner, tenant, balance] of seed) {
       this.accounts.set(id, { id, owner, tenant, balance });
     }
 
     const tokenSeed: SimToken[] = [
-      { token: "tok_customer_a", persona: "customer_a", account: "ARCHRED_TEST_ACCOUNT_A" },
-      { token: "tok_customer_b", persona: "customer_b", account: "ARCHRED_TEST_ACCOUNT_B" },
-      { token: "tok_customer_c", persona: "customer_c", account: "ARCHRED_TEST_ACCOUNT_C" },
-      { token: "tok_org_a_admin", persona: "org_a_admin", account: "ARCHRED_TEST_ACCOUNT_A" },
-      { token: "tok_org_a_member", persona: "org_a_member", account: "ARCHRED_TEST_ACCOUNT_A" },
-      { token: "tok_org_b_admin", persona: "org_b_admin", account: "ARCHRED_TEST_ACCOUNT_B" },
-      { token: "tok_org_b_member", persona: "org_b_member", account: "ARCHRED_TEST_ACCOUNT_B" },
-      { token: "tok_revoked", persona: "revoked_user", account: "ARCHRED_TEST_ACCOUNT_A", revoked: true },
-      { token: "tok_downgraded", persona: "downgraded_user", account: "ARCHRED_TEST_ACCOUNT_A" },
+      { token: "tok_customer_a", persona: "customer_a", account: "REDSWARM_TEST_ACCOUNT_A" },
+      { token: "tok_customer_b", persona: "customer_b", account: "REDSWARM_TEST_ACCOUNT_B" },
+      { token: "tok_customer_c", persona: "customer_c", account: "REDSWARM_TEST_ACCOUNT_C" },
+      { token: "tok_org_a_admin", persona: "org_a_admin", account: "REDSWARM_TEST_ACCOUNT_A" },
+      { token: "tok_org_a_member", persona: "org_a_member", account: "REDSWARM_TEST_ACCOUNT_A" },
+      { token: "tok_org_b_admin", persona: "org_b_admin", account: "REDSWARM_TEST_ACCOUNT_B" },
+      { token: "tok_org_b_member", persona: "org_b_member", account: "REDSWARM_TEST_ACCOUNT_B" },
+      { token: "tok_revoked", persona: "revoked_user", account: "REDSWARM_TEST_ACCOUNT_A", revoked: true },
+      { token: "tok_downgraded", persona: "downgraded_user", account: "REDSWARM_TEST_ACCOUNT_A" },
       { token: "tok_pending", persona: "pending_user" },
     ];
     for (const t of tokenSeed) this.tokens.set(t.token, t);
@@ -92,16 +92,16 @@ export class FintechSimulator {
     const cleanPath = path.split("?")[0] ?? path;
 
     // Staging ownership marker (spec §14).
-    if (method === "GET" && cleanPath === "/.well-known/archred-target") {
+    if (method === "GET" && cleanPath === "/.well-known/redswarm-target") {
       return {
         status: 200,
-        body: { environment: "staging", testingEnabled: true, targetId: "archred-local-sim" },
+        body: { environment: "staging", testingEnabled: true, targetId: "redswarm-local-sim" },
       };
     }
 
     // Test-only fixture reset, guarded by the verification token (spec §43).
     if (method === "POST" && cleanPath === "/test/reset") {
-      if (headers["x-archred-token"] !== this.verificationToken) {
+      if (headers["x-redswarm-token"] !== this.verificationToken) {
         return { status: 403, body: { error: "reset requires verification token" } };
       }
       this.reset();
@@ -110,7 +110,7 @@ export class FintechSimulator {
 
     // Test-only state inspection, guarded by the verification token (spec §60).
     if (cleanPath.startsWith("/test/state/")) {
-      if (headers["x-archred-token"] !== this.verificationToken) {
+      if (headers["x-redswarm-token"] !== this.verificationToken) {
         return { status: 403, body: { error: "state inspection requires verification token" } };
       }
       return this.handleStateInspection(cleanPath);
@@ -155,7 +155,7 @@ export class FintechSimulator {
 
     // *** Genuine weakness: no idempotency dedup. A retried logical transfer
     // *** (same idempotencyKey) is applied every time. This is the honest bug
-    // *** ArchRed is meant to discover — it is NOT a faked finding.
+    // *** RedSwarm is meant to discover — it is NOT a faked finding.
     const transactionId = `tx_${++this.txCounter}`;
     from.balance -= amount;
     to.balance += amount;
